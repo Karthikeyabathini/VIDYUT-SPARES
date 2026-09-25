@@ -1,0 +1,38 @@
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass VidyutAdmin@2026: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass VidyutSpares@2026: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass Vidyut@2026: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass VidyutSpares2026: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass VidyutAdmin2026: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass Vidyut2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass Vidyut@123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass VidyutSpares@123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass VidyutAdmin@123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass vidyutspares: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass vidyut123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass postgres: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass lmxnazyelhzvvqpajuoz: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass Admin@2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass Admin@123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass Password@123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass Password@2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass Vidyut#2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:6543, pass Vidyut$2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass VidyutAdmin@2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass VidyutSpares@2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass Vidyut@2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass VidyutSpares2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass VidyutAdmin2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass Vidyut2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass Vidyut@123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass VidyutSpares@123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass VidyutAdmin@123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass vidyutspares: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass vidyut123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass postgres: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass lmxnazyelhzvvqpajuoz: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass Admin@2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass Admin@123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass Password@123: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass Password@2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass Vidyut#2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked
+Failed for host aws-0-ap-south-1.pooler.supabase.com:5432, pass Vidyut$2026: (ECIRCUITBREAKER) too many authentication failures, new connections are temporarily blocked

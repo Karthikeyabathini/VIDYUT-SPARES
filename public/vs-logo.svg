@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 320" width="100%" height="100%">
+  <defs>
+    <style>
+      .vs-text {
+        font-family: Arial, 'Helvetica Neue', Helvetica, 'Arial Black', sans-serif;
+        font-weight: 900;
+        font-size: 215px;
+        fill: #0B389C;
+      }
+    </style>
+  </defs>
+  
+  <!-- Outer Oval Background (White fill inside oval) -->
+  <ellipse cx="250" cy="160" rx="230" ry="142" fill="#FFFFFF" />
+
+  <!-- Letter V -->
+  <text x="135" y="234" class="vs-text" text-anchor="middle">V</text>
+
+  <!-- Letter S -->
+  <text x="365" y="234" class="vs-text" text-anchor="middle">S</text>
+
+  <!-- Central Red Lightning Bolt -->
+  <polygon points="262,0 216,148 266,148 192,320 238,172 188,172" fill="#E52320" />
+
+  <!-- Outer Oval Border (drawn on top so stroke is crisp) -->
+  <ellipse cx="250" cy="160" rx="230" ry="142" fill="none" stroke="#0B389C" stroke-width="16" />
+</svg>

@@ -1,0 +1,6 @@
+Profile [public] paths: /
+Profile [public] definitions: 
+Profile [storage] paths: 
+Profile [storage] definitions: 
+Profile [graphql_public] paths: /, /rpc/graphql
+Profile [graphql_public] definitions: 

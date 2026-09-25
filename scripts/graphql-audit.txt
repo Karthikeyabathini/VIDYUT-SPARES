@@ -1,0 +1,1 @@
+GraphQL response: {"errors":[{"message":"pg_graphql extension is not enabled."}]}

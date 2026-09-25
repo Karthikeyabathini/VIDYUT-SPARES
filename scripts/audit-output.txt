@@ -1,0 +1,14 @@
+--- SUPABASE DATABASE FULL TABLE REPORT ---
+❌ Table [categories]: ERROR PGRST205 - Could not find the table 'public.categories' in the schema cache
+❌ Table [products]: ERROR PGRST205 - Could not find the table 'public.products' in the schema cache
+❌ Table [users]: ERROR PGRST205 - Could not find the table 'public.users' in the schema cache
+❌ Table [orders]: ERROR PGRST205 - Could not find the table 'public.orders' in the schema cache
+❌ Table [order_items]: ERROR PGRST205 - Could not find the table 'public.order_items' in the schema cache
+❌ Table [payments]: ERROR PGRST205 - Could not find the table 'public.payments' in the schema cache
+❌ Table [invoices]: ERROR PGRST205 - Could not find the table 'public.invoices' in the schema cache
+❌ Table [payment_methods]: ERROR PGRST205 - Could not find the table 'public.payment_methods' in the schema cache
+❌ Table [stock_movements]: ERROR PGRST205 - Could not find the table 'public.stock_movements' in the schema cache
+❌ Table [admin_audit_logs]: ERROR PGRST205 - Could not find the table 'public.admin_audit_logs' in the schema cache
+❌ Table [carts]: ERROR PGRST205 - Could not find the table 'public.carts' in the schema cache
+❌ Table [cart_items]: ERROR PGRST205 - Could not find the table 'public.cart_items' in the schema cache
+❌ Table [addresses]: ERROR PGRST205 - Could not find the table 'public.addresses' in the schema cache

@@ -1,0 +1,14 @@
+URL: https://lmxnazyelhzvvqpajuoz.supabase.co
+TABLE [categories]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.categories' in the schema cache
+TABLE [products]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.products' in the schema cache
+TABLE [orders]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.orders' in the schema cache
+TABLE [order_items]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.order_items' in the schema cache
+TABLE [users]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.users' in the schema cache
+TABLE [payments]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.payments' in the schema cache
+TABLE [invoices]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.invoices' in the schema cache
+TABLE [payment_methods]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.payment_methods' in the schema cache
+TABLE [stock_movements]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.stock_movements' in the schema cache
+TABLE [admin_audit_logs]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.admin_audit_logs' in the schema cache
+TABLE [carts]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.carts' in the schema cache
+TABLE [cart_items]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.cart_items' in the schema cache
+TABLE [addresses]: ERROR - Code: PGRST205 - Message: Could not find the table 'public.addresses' in the schema cache

@@ -1,0 +1,3 @@
+URL: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/database/query - Status: 401 - Response: {"message":"JWT failed verification"}
+URL: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/queries - Status: 401 - Response: {"message":"JWT failed verification"}
+URL: https://lmxnazyelhzvvqpajuoz.supabase.co/rest/v1/rpc/exec - Status: 404 - Response: {"code":"PGRST202","details":"Searched for the function public.exec with parameters query, sql or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":null,"message":"Could not find the function public.exec(query, sql) in the schema cache"}

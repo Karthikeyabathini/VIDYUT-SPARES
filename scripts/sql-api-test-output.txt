@@ -1,0 +1,5 @@
+Endpoint /rest/v1/: Status 200 - Body: {"swagger":"2.0","info":{"description":"","title":"standard public schema","version":"14.5"},"host":"lmxnazyelhzvvqpajuoz.supabase.co:443","basePath":"/","schemes":["https"],"consumes":["application/j
+Endpoint /pg_meta/v1/query: Status 404 - Body: {"error":"requested path is invalid"}
+Endpoint /pg_meta/v1/schemas: Status 404 - Body: {"error":"requested path is invalid"}
+Endpoint /rest/v1/rpc: Status 404 - Body: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.rpc' in the schema cache"}
+Endpoint /admin/v1/query: Status 403 - Body: {}

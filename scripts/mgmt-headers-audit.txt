@@ -1,0 +1,12 @@
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/database/query (Headers #1) - Status: 401 - Response: {"message":"JWT failed verification"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/database/query (Headers #2) - Status: 401 - Response: {"message":"Unauthorized"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/database/query (Headers #3) - Status: 401 - Response: {"message":"JWT failed verification"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/database/query (Headers #4) - Status: 401 - Response: {"message":"Unauthorized"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/sql (Headers #1) - Status: 401 - Response: {"message":"JWT failed verification"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/sql (Headers #2) - Status: 401 - Response: {"message":"Unauthorized"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/sql (Headers #3) - Status: 401 - Response: {"message":"JWT failed verification"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/sql (Headers #4) - Status: 401 - Response: {"message":"Unauthorized"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/query (Headers #1) - Status: 401 - Response: {"message":"JWT failed verification"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/query (Headers #2) - Status: 401 - Response: {"message":"Unauthorized"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/query (Headers #3) - Status: 401 - Response: {"message":"JWT failed verification"}
+Endpoint: https://api.supabase.com/v1/projects/lmxnazyelhzvvqpajuoz/query (Headers #4) - Status: 401 - Response: {"message":"Unauthorized"}

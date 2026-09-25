@@ -1,0 +1,14 @@
+Failed for host db.lmxnazyelhzvvqpajuoz.supabase.co, pass VidyutAdmin@2026: timeout expired
+Failed for host db.lmxnazyelhzvvqpajuoz.supabase.co, pass VidyutSpares@2026: timeout expired
+Failed for host db.lmxnazyelhzvvqpajuoz.supabase.co, pass Vidyut@2026: timeout expired
+Failed for host db.lmxnazyelhzvvqpajuoz.supabase.co, pass vidyutspares: timeout expired
+Failed for host db.lmxnazyelhzvvqpajuoz.supabase.co, pass postgres: timeout expired
+Failed for host db.lmxnazyelhzvvqpajuoz.supabase.co, pass lmxnazyelhzvvqpajuoz: timeout expired
+Failed for host db.lmxnazyelhzvvqpajuoz.supabase.co, pass Admin@2026: timeout expired
+Failed for host aws-0-ap-south-1.pooler.supabase.com, pass VidyutAdmin@2026: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com, pass VidyutSpares@2026: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com, pass Vidyut@2026: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com, pass vidyutspares: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com, pass postgres: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com, pass lmxnazyelhzvvqpajuoz: password authentication failed for user "postgres"
+Failed for host aws-0-ap-south-1.pooler.supabase.com, pass Admin@2026: password authentication failed for user "postgres"

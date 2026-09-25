@@ -1,0 +1,308 @@
+{
+  "categories": [
+    {
+      "id": "c1111111-1111-1111-1111-111111111111",
+      "name": "Switches & Sockets",
+      "slug": "switches-sockets",
+      "description": "Premium modular switches, socket outlets, regulators, and face plates for home & commercial installation.",
+      "is_active": true,
+      "created_at": "2026-09-25T11:07:07.166Z",
+      "updated_at": "2026-09-25T11:07:07.166Z"
+    },
+    {
+      "id": "c2222222-2222-2222-2222-222222222222",
+      "name": "Wires & Cables",
+      "slug": "wires-cables",
+      "description": "High-grade flame retardant copper wires, flexible cables, and heavy-duty industrial cables.",
+      "is_active": true,
+      "created_at": "2026-09-25T11:07:07.166Z",
+      "updated_at": "2026-09-25T11:07:07.166Z"
+    },
+    {
+      "id": "c3333333-3333-3333-3333-333333333333",
+      "name": "Circuit Protection (MCB / RCCB)",
+      "slug": "circuit-protection",
+      "description": "Miniature circuit breakers, residual current breakers, distribution boards, and isolators.",
+      "is_active": true,
+      "created_at": "2026-09-25T11:07:07.166Z",
+      "updated_at": "2026-09-25T11:07:07.166Z"
+    },
+    {
+      "id": "c4444444-4444-4444-4444-444444444444",
+      "name": "LED Lighting & Fixtures",
+      "slug": "led-lighting",
+      "description": "Energy efficient LED panel lights, tube lights, flood lights, and commercial downlights.",
+      "is_active": true,
+      "created_at": "2026-09-25T11:07:07.166Z",
+      "updated_at": "2026-09-25T11:07:07.166Z"
+    },
+    {
+      "id": "c5555555-5555-5555-5555-555555555555",
+      "name": "Conduits & Fitting Spares",
+      "slug": "conduits-fittings",
+      "description": "PVC conduits, junction boxes, circular boxes, bend pipes, and heavy clamps.",
+      "is_active": true,
+      "created_at": "2026-09-25T11:07:07.166Z",
+      "updated_at": "2026-09-25T11:07:07.166Z"
+    },
+    {
+      "id": "c6666666-6666-6666-6666-666666666666",
+      "name": "Electrical Tools & Hardware",
+      "slug": "tools-hardware",
+      "description": "Insulated pliers, wire strippers, voltage testers, insulation tapes, and cable ties.",
+      "is_active": true,
+      "created_at": "2026-09-25T11:07:07.166Z",
+      "updated_at": "2026-09-25T11:07:07.166Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "5ac864f7-9809-44b9-951e-16ad52cca96c",
+      "name": "lbs spares",
+      "slug": "lbs-spares-715",
+      "sku": "VS-LBS-7220",
+      "category_id": "c1111111-1111-1111-1111-111111111111",
+      "brand": "spares",
+      "price": 799,
+      "stock_quantity": 50,
+      "low_stock_threshold": 5,
+      "description": null,
+      "image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790347798194_lbs_spares",
+      "is_active": true,
+      "created_at": "2026-09-25T14:49:59.349Z",
+      "updated_at": "2026-09-25T14:49:59.349Z"
+    },
+    {
+      "id": "7fc9da80-09f9-4c22-82ab-8a3234efb4bb",
+      "name": "11k station",
+      "slug": "11k-station-602",
+      "sku": "VS-XXK-9102",
+      "category_id": "c1111111-1111-1111-1111-111111111111",
+      "brand": "11k",
+      "price": 998,
+      "stock_quantity": 50,
+      "low_stock_threshold": 5,
+      "description": null,
+      "image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790347757268_11k_station",
+      "is_active": true,
+      "created_at": "2026-09-25T14:49:19.048Z",
+      "updated_at": "2026-09-25T14:51:28.628Z"
+    },
+    {
+      "id": "d856bf4b-b191-443d-a464-79c30ff15713",
+      "name": "heater",
+      "slug": "heater-900",
+      "sku": "VS-HEA-3403",
+      "category_id": "c1111111-1111-1111-1111-111111111111",
+      "brand": "heater",
+      "price": 599,
+      "stock_quantity": 50,
+      "low_stock_threshold": 5,
+      "description": null,
+      "image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790347726566_heater",
+      "is_active": true,
+      "created_at": "2026-09-25T14:48:47.539Z",
+      "updated_at": "2026-09-25T14:48:47.539Z"
+    },
+    {
+      "id": "783285a4-437c-42be-8bfe-600d3e7f930e",
+      "name": "LPG insulators",
+      "slug": "lpg-insulators-114",
+      "sku": "VS-LPG-1611",
+      "category_id": "c5555555-5555-5555-5555-555555555555",
+      "brand": "LPG",
+      "price": 999,
+      "stock_quantity": 50,
+      "low_stock_threshold": 5,
+      "description": null,
+      "image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790341054180_LPG_insulators",
+      "is_active": true,
+      "created_at": "2026-09-25T12:57:35.463Z",
+      "updated_at": "2026-09-25T12:57:35.463Z"
+    },
+    {
+      "id": "babde2ac-e065-4f61-be4d-4a79b60d411e",
+      "name": "4 wire spasres",
+      "slug": "4-wire-spasres-270",
+      "sku": "VS-XXW-7937",
+      "category_id": "c2222222-2222-2222-2222-222222222222",
+      "brand": "spasres",
+      "price": 499,
+      "stock_quantity": 50,
+      "low_stock_threshold": 5,
+      "description": null,
+      "image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790341009373_4_wire_spasres",
+      "is_active": true,
+      "created_at": "2026-09-25T12:56:50.981Z",
+      "updated_at": "2026-09-25T12:56:50.981Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "cb96ca50-5b32-4990-98ed-2f600aaf2c8a",
+      "order_number": "VS-2026-757817",
+      "user_id": "493daa5d-91c3-4710-827c-839294c18a68",
+      "address_id": "b6640a92-f6d0-4aa3-9e47-0eaeb3b942b2",
+      "address_snapshot": {
+        "id": "b6640a92-f6d0-4aa3-9e47-0eaeb3b942b2",
+        "user_id": "493daa5d-91c3-4710-827c-839294c18a68",
+        "full_name": "kethan krishna",
+        "phone": "9185264789",
+        "address_line_1": "mandapet",
+        "address_line_2": "",
+        "city": "mandapet",
+        "state": "Andhra Pradesh",
+        "pincode": "534202",
+        "landmark": "",
+        "is_default": true,
+        "created_at": "2026-09-25T11:35:37.998Z",
+        "updated_at": "2026-09-25T11:35:37.998Z"
+      },
+      "subtotal": 2330,
+      "delivery_charge": 0,
+      "total_amount": 2330,
+      "payment_method": "COD",
+      "payment_status": "NOT_REQUIRED",
+      "order_status": "DELIVERED",
+      "placed_at": "2026-09-25T11:36:24.872Z",
+      "confirmed_at": "2026-09-25T11:36:24.872Z",
+      "created_at": "2026-09-25T11:36:24.872Z",
+      "updated_at": "2026-09-25T12:54:46.507Z",
+      "items": [
+        {
+          "id": "09e06048-2a72-4e79-9729-a536d4635a17",
+          "product_id": "p1010101-0000-0000-0000-000000000004",
+          "product_name_snapshot": "1.5 sq mm Flame Retardant Wire (90m Red)",
+          "sku_snapshot": "VS-WR-015",
+          "price_snapshot": 1650,
+          "quantity": 1,
+          "subtotal": 1650,
+          "created_at": "2026-09-25T11:36:24.778Z",
+          "order_id": "cb96ca50-5b32-4990-98ed-2f600aaf2c8a"
+        },
+        {
+          "id": "e73b6d60-99cc-42ab-956f-b5e5703819ef",
+          "product_id": "p1010101-0000-0000-0000-000000000005",
+          "product_name_snapshot": "32A Double Pole C-Curve MCB (10kA)",
+          "sku_snapshot": "VS-MCB-032DP",
+          "price_snapshot": 680,
+          "quantity": 1,
+          "subtotal": 680,
+          "created_at": "2026-09-25T11:36:24.871Z",
+          "order_id": "cb96ca50-5b32-4990-98ed-2f600aaf2c8a"
+        }
+      ],
+      "delivered_at": "2026-09-25T12:54:46.203Z",
+      "completed_at": "2026-09-25T12:54:46.203Z"
+    },
+    {
+      "id": "ee99eff2-8d20-466a-9dbc-456444d08ef2",
+      "order_number": "VS-2026-490376",
+      "user_id": "493daa5d-91c3-4710-827c-839294c18a68",
+      "address_id": "b6640a92-f6d0-4aa3-9e47-0eaeb3b942b2",
+      "address_snapshot": {
+        "id": "b6640a92-f6d0-4aa3-9e47-0eaeb3b942b2",
+        "user_id": "493daa5d-91c3-4710-827c-839294c18a68",
+        "full_name": "kethan krishna",
+        "phone": "9185264789",
+        "address_line_1": "mandapet",
+        "address_line_2": "",
+        "city": "mandapet",
+        "state": "Andhra Pradesh",
+        "pincode": "534202",
+        "landmark": "",
+        "is_default": true,
+        "created_at": "2026-09-25T11:35:37.998Z",
+        "updated_at": "2026-09-25T11:35:37.998Z"
+      },
+      "subtotal": 1650,
+      "delivery_charge": 50,
+      "total_amount": 1700,
+      "payment_method": "COD",
+      "payment_status": "NOT_REQUIRED",
+      "order_status": "CANCELLED",
+      "placed_at": "2026-09-25T11:35:41.358Z",
+      "confirmed_at": "2026-09-25T11:35:41.358Z",
+      "created_at": "2026-09-25T11:35:41.358Z",
+      "updated_at": "2026-09-25T13:16:38.514Z",
+      "items": [
+        {
+          "id": "5b26f4f9-a736-4e14-b59c-fbd84f889a80",
+          "product_id": "p1010101-0000-0000-0000-000000000004",
+          "product_name_snapshot": "1.5 sq mm Flame Retardant Wire (90m Red)",
+          "sku_snapshot": "VS-WR-015",
+          "price_snapshot": 1650,
+          "quantity": 1,
+          "subtotal": 1650,
+          "created_at": "2026-09-25T11:35:41.358Z",
+          "order_id": "ee99eff2-8d20-466a-9dbc-456444d08ef2"
+        }
+      ],
+      "cancellation_status": "CUSTOMER_CANCELLED",
+      "cancelled_by": "CUSTOMER",
+      "cancellation_reason": "Found a better price",
+      "cancelled_at": "2026-09-25T13:16:38.402Z"
+    }
+  ],
+  "payments": [],
+  "invoices": [],
+  "addresses": [
+    {
+      "id": "b6640a92-f6d0-4aa3-9e47-0eaeb3b942b2",
+      "user_id": "493daa5d-91c3-4710-827c-839294c18a68",
+      "full_name": "kethan krishna",
+      "phone": "9185264789",
+      "address_line_1": "mandapet",
+      "address_line_2": "",
+      "city": "mandapet",
+      "state": "Andhra Pradesh",
+      "pincode": "534202",
+      "landmark": "",
+      "is_default": true,
+      "created_at": "2026-09-25T11:35:37.998Z",
+      "updated_at": "2026-09-25T11:35:37.998Z"
+    }
+  ],
+  "payment_methods": [
+    {
+      "id": "m1111111-0000-0000-0000-000000000001",
+      "type": "UPI_NUMBER",
+      "display_name": "VIDYUT SPARES PhonePe / GPay Number",
+      "provider": "PhonePe & GPay",
+      "phone_number": "9440146599",
+      "upi_id": "9440146599@ybl",
+      "qr_image_url": "/vs-logo.svg",
+      "instructions": "Transfer exact order amount to 9440146599. Copy the 12-digit UTR transaction ID and upload payment screenshot.",
+      "is_active": true,
+      "sort_order": 1,
+      "created_at": "2026-09-25T11:07:07.167Z",
+      "updated_at": "2026-09-25T11:07:07.167Z"
+    },
+    {
+      "id": "709bdf0b-feca-44bd-88b5-836ded426441",
+      "type": "UPI_QR",
+      "display_name": "vidyut qr",
+      "provider": "PhonePe",
+      "upi_id": "",
+      "phone_number": "",
+      "qr_image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790349391349_qr_1790349391269",
+      "instructions": "",
+      "is_active": true,
+      "sort_order": 1,
+      "created_at": "2026-09-25T15:16:33.730Z",
+      "updated_at": "2026-09-25T15:16:33.730Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "c0000000-0000-0000-0000-000000000001",
+      "name": "VIDYUT SPARES Store Admin",
+      "email": "admin@vidyutspares.com",
+      "phone": "9440146599",
+      "role": "ADMIN",
+      "is_active": true,
+      "created_at": "2026-09-25T11:07:07.560Z",
+      "updated_at": "2026-09-25T11:07:07.560Z"
+    }
+  ]
+}

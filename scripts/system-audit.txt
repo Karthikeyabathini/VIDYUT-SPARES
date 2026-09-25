@@ -1,0 +1,4 @@
+Auth admin listUsers: error=null, count=5
+Users in auth: [{"id":"acd37e6e-919c-446c-aa25-f78700758e3a","email":"customer@test.com"},{"id":"493daa5d-91c3-4710-827c-839294c18a68","email":"kethan143@gmail.com"},{"id":"ac34b239-17fa-4374-8f23-6c8e59e43254","email":"prasad143@gmail.com"},{"id":"baf67928-c8fb-4325-b31a-42b23fcd1e2b","email":"bharat123@gmail.com"},{"id":"32581474-dbfb-4782-9d00-c7d7ebb914a1","email":"karthik@gmail.com"}]
+Storage listBuckets: error=null, buckets=[{"id":"product-images","name":"product-images","owner":"","public":true,"type":"STANDARD","file_size_limit":null,"allowed_mime_types":null,"created_at":"2026-09-21T18:46:02.570Z","updated_at":"2026-09-21T18:46:02.570Z"},{"id":"payment-proofs","name":"payment-proofs","owner":"","public":true,"type":"STANDARD","file_size_limit":null,"allowed_mime_types":null,"created_at":"2026-09-23T15:06:51.107Z","updated_at":"2026-09-23T15:06:51.107Z"}]
+Reload schema cache response: 405
