@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { getActiveUser } from '@/lib/actions/authActions';
 import { clearCart, getCart } from '@/lib/actions/cartActions';
 import { addressSchema } from '@/lib/validators';
-import { ActionResponse, Address, Order, OrderStatus } from '@/types';
+import { ActionResponse, Address, Order, OrderStatus, Payment } from '@/types';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getProductById, updateProductStock } from '@/lib/actions/productActions';
@@ -15,6 +15,7 @@ export async function getAddresses(): Promise<Address[]> {
     const user = await getActiveUser();
     if (!user) return [];
 
+    let supabaseAddrs: Address[] = [];
     try {
       const adminSupabase = createAdminClient();
       const { data, error } = await adminSupabase
@@ -24,17 +25,60 @@ export async function getAddresses(): Promise<Address[]> {
         .order('created_at', { ascending: false });
 
       if (!error && data) {
-        return data as Address[];
+        supabaseAddrs = data as Address[];
       }
     } catch {
       // DB fallback
     }
 
-    return persistentStore.getAddresses(user.id);
+    const localAddrs = persistentStore.getAddresses(user.id);
+
+    // Merge both sources by ID so no address is omitted
+    const addressMap = new Map<string, Address>();
+    localAddrs.forEach((a) => addressMap.set(a.id, a));
+    supabaseAddrs.forEach((a) => addressMap.set(a.id, a));
+
+    // If user has no specific addresses saved under user.id, check all local addresses
+    if (addressMap.size === 0) {
+      const allLocal = persistentStore.getAddresses();
+      allLocal.forEach((a) => addressMap.set(a.id, a));
+    }
+
+    return Array.from(addressMap.values());
   } catch (err) {
     console.error('getAddresses error:', err);
     return [];
   }
+}
+
+export async function getAddressById(addressId?: string): Promise<Address | null> {
+  if (addressId) {
+    // 1. Direct local lookup in persistentStore
+    const local = persistentStore.getAddressById(addressId);
+    if (local) return local;
+
+    // 2. Direct Supabase query by addressId
+    try {
+      const adminSupabase = createAdminClient();
+      const { data, error } = await adminSupabase
+        .from('addresses')
+        .select('*')
+        .eq('id', addressId)
+        .maybeSingle();
+
+      if (!error && data) return data as Address;
+    } catch {
+      // DB fallback
+    }
+  }
+
+  // 3. Fallback to all addresses for current user or default local addresses
+  const allAddrs = await getAddresses();
+  if (addressId) {
+    const matched = allAddrs.find((a) => a.id === addressId);
+    if (matched) return matched;
+  }
+  return allAddrs[0] || null;
 }
 
 export async function createAddress(formData: any): Promise<ActionResponse<Address>> {
@@ -110,8 +154,7 @@ export async function placeCODOrder(params: {
     }
     const userId = user.id;
 
-    const userAddrs = await getAddresses();
-    const address = userAddrs.find((a) => a.id === params.address_id) || userAddrs[0];
+    const address = await getAddressById(params.address_id);
 
     if (!address) return { success: false, error: 'Delivery address not found. Please add a valid address.' };
 
@@ -273,8 +316,7 @@ export async function submitOnlinePaymentAndCreateOrder(params: {
       };
     }
 
-    const userAddrs = await getAddresses();
-    const address = userAddrs.find((a) => a.id === params.address_id) || userAddrs[0];
+    const address = await getAddressById(params.address_id);
 
     if (!address) {
       return { success: false, error: 'Delivery address not found. Please select a valid address.' };
@@ -402,7 +444,26 @@ export async function submitOnlinePaymentAndCreateOrder(params: {
       console.error('submitOnlinePaymentAndCreateOrder Supabase error:', dbErr);
     }
 
+    const newPayment: Payment = {
+      id: newPaymentId,
+      order_id: newOrderId,
+      payment_method: params.payment_method || 'Online Payment',
+      amount: total_amount,
+      payment_status: 'AWAITING_VERIFICATION' as any,
+      utr_number: trimmedUTR,
+      proof_file_url: params.proof_file_url,
+      payer_name: params.payer_name || user.name || user.email || null,
+      payer_phone: params.payer_phone || user.phone || address.phone || null,
+      payment_date: now.split('T')[0],
+      payment_time: new Date().toLocaleTimeString('en-IN', { hour12: false }),
+      customer_note: params.customer_note || null,
+      created_at: now,
+      updated_at: now,
+      order: newOrder,
+    };
+
     persistentStore.createOrder(newOrder);
+    persistentStore.createPayment(newPayment);
 
     // Deduct stock for ordered products
     for (const item of cartItems) {

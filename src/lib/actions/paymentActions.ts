@@ -20,6 +20,7 @@ export async function getActivePaymentMethods(): Promise<PaymentMethod[]> {
 
 export async function getAllPayments(): Promise<Payment[]> {
   try {
+    let supabasePayments: Payment[] = [];
     try {
       const adminSupabase = createAdminClient();
       const { data, error } = await adminSupabase
@@ -27,15 +28,64 @@ export async function getAllPayments(): Promise<Payment[]> {
         .select('*, order:orders(*, user:users(*))')
         .order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) {
-        return data as Payment[];
+      if (!error && data) {
+        supabasePayments = data as Payment[];
       }
     } catch {
       // DB fallback
     }
 
-    return persistentStore.getPayments();
+    const localPayments = persistentStore.getPayments();
+
+    // Merge payments by ID
+    const paymentMap = new Map<string, Payment>();
+    localPayments.forEach((p) => paymentMap.set(p.id, p));
+    supabasePayments.forEach((p) => paymentMap.set(p.id, p));
+
+    // Fallback: Ensure any online payment order has a corresponding payment record
+    const allOrders = persistentStore.getOrders();
+    for (const ord of allOrders) {
+      if (ord.payment_method && ord.payment_method !== 'COD') {
+        const hasPayment = Array.from(paymentMap.values()).some((p) => p.order_id === ord.id || p.order?.order_number === ord.order_number);
+        if (!hasPayment) {
+          const synthesizedPayment: Payment = {
+            id: `pay-${ord.id}`,
+            order_id: ord.id,
+            payment_method: ord.payment_method,
+            amount: ord.total_amount,
+            payment_status: ord.payment_status as any,
+            utr_number: `REF-${ord.order_number}`,
+            proof_file_url: '/vs-logo.svg',
+            payer_name: ord.address_snapshot?.full_name || 'Customer',
+            payer_phone: ord.address_snapshot?.phone || null,
+            payment_date: (ord.placed_at || ord.created_at || new Date().toISOString()).split('T')[0],
+            payment_time: new Date(ord.placed_at || ord.created_at || Date.now()).toLocaleTimeString('en-IN', { hour12: false }),
+            customer_note: 'Online Payment submitted during checkout',
+            created_at: ord.created_at || new Date().toISOString(),
+            updated_at: ord.updated_at || new Date().toISOString(),
+            order: ord,
+          };
+          paymentMap.set(synthesizedPayment.id, synthesizedPayment);
+          persistentStore.createPayment(synthesizedPayment);
+        }
+      }
+    }
+
+    const merged = Array.from(paymentMap.values());
+
+    // Enrich order information if missing
+    for (const p of merged) {
+      if (!p.order || !p.order.order_number) {
+        const matchingOrder = persistentStore.getOrderById(p.order_id);
+        if (matchingOrder) {
+          p.order = matchingOrder;
+        }
+      }
+    }
+
+    return merged.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
   } catch (err) {
+    console.error('getAllPayments error:', err);
     return persistentStore.getPayments();
   }
 }
@@ -137,7 +187,8 @@ export async function submitPaymentProof(formData: {
 export async function approvePayment(paymentId: string, adminNote?: string): Promise<ActionResponse<Invoice>> {
   try {
     const now = new Date().toISOString();
-    const payment = persistentStore.getPayments().find((p) => p.id === paymentId || p.order_id === paymentId);
+    const allPayments = await getAllPayments();
+    const payment = allPayments.find((p) => p.id === paymentId || p.order_id === paymentId);
     const order = await getOrderById(payment?.order_id || paymentId);
 
     if (!order) {
@@ -236,7 +287,8 @@ export async function rejectPayment(paymentId: string, rejectionReason: string):
       verified_at: now,
     });
 
-    const payment = persistentStore.getPayments().find((p) => p.id === paymentId || p.order_id === paymentId);
+    const allPayments = await getAllPayments();
+    const payment = allPayments.find((p) => p.id === paymentId || p.order_id === paymentId);
     if (payment?.order_id) {
       persistentStore.updateOrder(payment.order_id, {
         payment_status: 'REJECTED' as any,
