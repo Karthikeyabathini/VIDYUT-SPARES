@@ -29,6 +29,9 @@ export default function ProductDetailActions({ product }: { product: Product }) 
 
     if (res.success) {
       setAdded(true);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
       setTimeout(() => setAdded(false), 2500);
     } else {
       alert(res.error || 'Failed to add item to cart');
@@ -41,6 +44,9 @@ export default function ProductDetailActions({ product }: { product: Product }) 
     const res = await addToCart(product.id, quantity);
     setLoading(false);
     if (res.success) {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
       router.push('/cart');
     } else {
       alert(res.error || 'Failed to proceed to checkout');

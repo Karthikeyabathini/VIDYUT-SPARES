@@ -47,7 +47,16 @@ async function saveCartToCookie(items: CartItem[]): Promise<void> {
   try {
     const key = await getCartCookieKey();
     const cookieStore = await cookies();
-    cookieStore.set(key, JSON.stringify(items), {
+    // Strip heavy product object before stringifying to keep cookie lightweight (< 4KB header limit)
+    const cleanItems = items.map((item) => ({
+      id: item.id,
+      cart_id: item.cart_id,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      created_at: item.created_at,
+      updated_at: item.updated_at,
+    }));
+    cookieStore.set(key, JSON.stringify(cleanItems), {
       path: '/',
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 30,

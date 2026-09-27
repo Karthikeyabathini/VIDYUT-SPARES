@@ -27,6 +27,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     if (res.success) {
       setAddedMessage(true);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
       setTimeout(() => setAddedMessage(false), 2000);
     } else {
       if (res.error?.toLowerCase().includes('login') || res.error?.toLowerCase().includes('auth')) {

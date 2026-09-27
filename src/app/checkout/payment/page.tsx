@@ -2,30 +2,47 @@ import React from 'react';
 import { redirect, notFound } from 'next/navigation';
 import { getOrderById } from '@/lib/actions/orderActions';
 import { getActivePaymentMethods } from '@/lib/actions/paymentActions';
+import { getCart } from '@/lib/actions/cartActions';
 import PaymentSubmissionForm from './PaymentSubmissionForm';
-import { ShieldCheck, QrCode, Phone, Building2 } from 'lucide-react';
+import { QrCode, Phone, Building2 } from 'lucide-react';
 
 interface PaymentPageProps {
   searchParams: Promise<{
     orderId?: string;
+    addressId?: string;
+    methodId?: string;
   }>;
 }
 
 export const revalidate = 0;
 
 export default async function PaymentPage({ searchParams }: PaymentPageProps) {
-  const { orderId } = await searchParams;
+  const { orderId, addressId, methodId } = await searchParams;
 
-  if (!orderId) {
+  let order = null;
+  let amountPayable = 0;
+  let targetAddressId = addressId || '';
+
+  if (orderId) {
+    order = await getOrderById(orderId);
+    if (!order) {
+      notFound();
+    }
+    amountPayable = order.total_amount;
+    targetAddressId = order.address_id;
+  } else if (addressId) {
+    const { items } = await getCart();
+    if (!items || items.length === 0) {
+      redirect('/cart');
+    }
+    const subtotal = items.reduce((sum, i) => sum + (i.product?.price || 0) * i.quantity, 0);
+    const deliveryCharge = subtotal >= 2000 ? 0 : 50;
+    amountPayable = subtotal + deliveryCharge;
+  } else {
     redirect('/cart');
   }
 
-  const order = await getOrderById(orderId);
   const paymentMethods = await getActivePaymentMethods();
-
-  if (!order) {
-    notFound();
-  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -37,13 +54,13 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
               Manual Online Payment Verification
             </span>
             <h1 className="text-2xl font-extrabold text-white">
-              Order #{order.order_number}
+              {order ? `Order #${order.order_number}` : 'Complete Online Payment'}
             </h1>
           </div>
           <div className="bg-amber-500 text-slate-950 px-4 py-2 rounded-xl text-right">
             <span className="text-[10px] uppercase font-bold block leading-tight">Amount Payable</span>
             <span className="text-xl font-extrabold">
-              ₹{order.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              ₹{amountPayable.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </span>
           </div>
         </div>
@@ -118,7 +135,13 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
       </div>
 
       {/* PROOF SUBMISSION FORM */}
-      <PaymentSubmissionForm order={order} paymentMethods={paymentMethods} />
+      <PaymentSubmissionForm
+        order={order}
+        addressId={targetAddressId}
+        selectedMethodId={methodId}
+        amountPayable={amountPayable}
+        paymentMethods={paymentMethods}
+      />
     </div>
   );
 }

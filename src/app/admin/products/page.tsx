@@ -31,8 +31,8 @@ export default async function AdminProductsPage() {
       </div>
 
       {/* PRODUCTS TABLE */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <table className="w-full text-left text-xs">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
+        <table className="w-full text-left text-xs min-w-[640px]">
           <thead>
             <tr className="bg-[#0F2C59] text-white font-bold uppercase text-[11px] tracking-wider">
               <th className="p-4">SKU</th>

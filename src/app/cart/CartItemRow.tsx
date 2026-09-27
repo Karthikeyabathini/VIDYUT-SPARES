@@ -19,13 +19,18 @@ export default function CartItemRow({ item }: { item: CartItem }) {
     setLoading(false);
     if (!res.success) {
       alert(res.error || 'Could not update quantity');
+    } else if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('cart-updated'));
     }
   };
 
   const handleRemove = async () => {
     setLoading(true);
-    await removeFromCart(item.id);
+    const res = await removeFromCart(item.id);
     setLoading(false);
+    if (res.success && typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('cart-updated'));
+    }
   };
 
   const itemSubtotal = product.price * item.quantity;

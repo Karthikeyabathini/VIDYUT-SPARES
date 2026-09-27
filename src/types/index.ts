@@ -219,6 +219,16 @@ export interface AdminAuditLog {
   admin?: UserProfile;
 }
 
+export interface StoreConfig {
+  business_name: string;
+  store_phone: string;
+  store_email: string;
+  store_address: string;
+  gstin?: string;
+  support_hours?: string;
+  updated_at?: string;
+}
+
 export type ActionResponse<T = any> = {
   success: boolean;
   data?: T;
