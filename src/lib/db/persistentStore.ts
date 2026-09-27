@@ -427,9 +427,17 @@ export const persistentStore = {
     return this.updateProduct(id, { stock_quantity: newQty });
   },
 
-  getAddresses(userId: string): Address[] {
+  getAddresses(userId?: string): Address[] {
     const store = ensureDataFile();
-    return store.addresses.filter((a) => a.user_id === userId);
+    if (userId) {
+      return store.addresses.filter((a) => a.user_id === userId);
+    }
+    return store.addresses;
+  },
+
+  getAddressById(id: string): Address | null {
+    const store = ensureDataFile();
+    return store.addresses.find((a) => a.id === id) || null;
   },
 
   createAddress(address: Address): Address {
