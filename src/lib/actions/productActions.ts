@@ -26,11 +26,11 @@ export async function getCategories(): Promise<Category[]> {
       .eq('is_active', true)
       .order('name', { ascending: true });
 
-    if (!error && data && data.length > 0) {
+    if (!error && data) {
       return data as Category[];
     }
   } catch (err) {
-    // Supabase table missing or connection fallback
+    console.error('getCategories DB error:', err);
   }
 
   return persistentStore.getCategories();
@@ -60,14 +60,14 @@ export async function createCategory(formData: {
       updated_at: now,
     };
 
-    persistentStore.createCategory(newCat);
-
     try {
       const adminSupabase = createAdminClient();
       await adminSupabase.from('categories').insert([newCat]);
-    } catch {
-      // Ignore DB sync error
+    } catch (dbErr) {
+      console.error('Category Supabase insert error:', dbErr);
     }
+
+    persistentStore.createCategory(newCat);
 
     revalidatePath('/', 'layout');
     revalidatePath('/products');
@@ -79,6 +79,7 @@ export async function createCategory(formData: {
 
 export async function getProducts(params?: ProductFilterParams): Promise<Product[]> {
   let list: Product[] = [];
+  let dbSuccess = false;
 
   try {
     const adminSupabase = createAdminClient();
@@ -94,14 +95,15 @@ export async function getProducts(params?: ProductFilterParams): Promise<Product
 
     const { data, error } = await query;
 
-    if (!error && data && data.length > 0) {
+    if (!error && data) {
+      dbSuccess = true;
       list = data as Product[];
     }
-  } catch {
-    // DB fallback
+  } catch (err) {
+    console.error('getProducts DB error:', err);
   }
 
-  if (list.length === 0) {
+  if (!dbSuccess) {
     list = persistentStore.getProducts();
   }
 

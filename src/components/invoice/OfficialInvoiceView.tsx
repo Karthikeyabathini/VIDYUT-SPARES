@@ -1,16 +1,23 @@
 'use client';
 
 import React from 'react';
-import { Invoice } from '@/types';
+import { Invoice, StoreConfig } from '@/types';
 import { User, MapPin, Mail, Phone, Package, Zap, CheckCircle2, FileText } from 'lucide-react';
 
 interface OfficialInvoiceViewProps {
   invoice: Invoice;
+  storeConfig?: StoreConfig;
 }
 
-export default function OfficialInvoiceView({ invoice }: OfficialInvoiceViewProps) {
+export default function OfficialInvoiceView({ invoice, storeConfig }: OfficialInvoiceViewProps) {
   const order = invoice.order;
   if (!order) return null;
+
+  const businessName = storeConfig?.business_name || 'VIDYUT SPARES';
+  const phone = storeConfig?.store_phone || '9440146599';
+  const email = storeConfig?.store_email || 'vidyutspares@gmail.com';
+  const addressStr = storeConfig?.store_address || '11-39-15, Katurivari St, Beside 1 Town Police Station, Tarapet, Vijayawada, Andhra Pradesh 520001, India';
+  const gstin = storeConfig?.gstin;
 
   const address = order.address_snapshot || {};
   const items = order.items || [];
@@ -181,7 +188,7 @@ export default function OfficialInvoiceView({ invoice }: OfficialInvoiceViewProp
                 </div>
                 <div>
                   <h1 style={{ fontSize: '22px', fontWeight: 900, letterSpacing: '-0.025em', textTransform: 'uppercase', color: '#ffffff', margin: 0 }}>
-                    VIDYUT SPARES
+                    {businessName}
                   </h1>
                   <p style={{ fontSize: '10px', color: '#FCD34D', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>
                     ELECTRICAL PRODUCTS & SPARES
@@ -274,25 +281,31 @@ export default function OfficialInvoiceView({ invoice }: OfficialInvoiceViewProp
 
                       {/* Right Column: Store Business Contact Info */}
                       <div style={{ paddingLeft: '6px', color: '#334155', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                          <MapPin style={{ height: '15px', width: '15px', color: '#0F2C59', flexShrink: 0, marginTop: '1px' }} />
-                          <div>
-                            <p style={{ fontWeight: 800, color: '#0F2C59', margin: 0 }}>VIDYUT SPARES</p>
-                            <p style={{ fontSize: '10px', lineHeight: 1.3, color: '#475569', margin: '2px 0 0 0' }}>
-                              11-39-15, Katurivari St, Beside 1 Town Police Station,
-                              <br />
-                              Tarapet, Vijayawada, Andhra Pradesh - 520001
-                            </p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                            <MapPin style={{ height: '15px', width: '15px', color: '#0F2C59', flexShrink: 0, marginTop: '1px' }} />
+                            <div>
+                              <p style={{ fontWeight: 800, color: '#0F2C59', margin: 0 }}>{businessName}</p>
+                              <p style={{ fontSize: '10px', lineHeight: 1.3, color: '#475569', margin: '2px 0 0 0' }}>
+                                {addressStr}
+                              </p>
+                            </div>
                           </div>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <Mail style={{ height: '14px', width: '14px', color: '#0F2C59', flexShrink: 0 }} />
-                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#1e293b' }}>vidyutspares@gmail.com</span>
+                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#1e293b' }}>{email}</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <Phone style={{ height: '14px', width: '14px', color: '#0F2C59', flexShrink: 0 }} />
-                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#1e293b' }}>9440146599</span>
+                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#1e293b' }}>+91 {phone}</span>
                         </div>
+                        {gstin && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FileText style={{ height: '14px', width: '14px', color: '#0F2C59', flexShrink: 0 }} />
+                            <span style={{ fontSize: '10px', fontWeight: 700, color: '#1e293b', fontFamily: 'monospace' }}>GSTIN: {gstin}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

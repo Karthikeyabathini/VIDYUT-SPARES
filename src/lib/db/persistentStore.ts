@@ -1,9 +1,19 @@
 import fs from 'fs';
 import path from 'path';
-import { Category, Product, Order, Payment, Invoice, Address, PaymentMethod, UserProfile } from '@/types';
+import { Category, Product, Order, Payment, Invoice, Address, PaymentMethod, UserProfile, StoreConfig, AdminAuditLog } from '@/types';
 
 const DATA_DIR = path.join(process.cwd(), 'src', 'data');
 const DB_FILE = path.join(DATA_DIR, 'persistent-db.json');
+
+const DEFAULT_STORE_CONFIG: StoreConfig = {
+  business_name: 'VIDYUT SPARES',
+  store_phone: '9440146599',
+  store_email: 'vidyutspares@gmail.com',
+  store_address: '11-39-15, Katurivari St, Beside 1 Town Police Station, Tarapet, Vijayawada, Andhra Pradesh 520001, India',
+  gstin: '37AAAAA0000A1Z5',
+  support_hours: 'Mon - Sat: 9:00 AM - 8:30 PM (IST)',
+  updated_at: new Date().toISOString(),
+};
 
 const INITIAL_CATEGORIES: Category[] = [
   {
@@ -279,6 +289,8 @@ interface SchemaStore {
   addresses: Address[];
   payment_methods: PaymentMethod[];
   users: UserProfile[];
+  store_config?: StoreConfig;
+  audit_logs?: AdminAuditLog[];
 }
 
 function ensureDataFile(): SchemaStore {
@@ -308,6 +320,8 @@ function ensureDataFile(): SchemaStore {
             updated_at: new Date().toISOString(),
           },
         ],
+        store_config: DEFAULT_STORE_CONFIG,
+        audit_logs: [],
       };
       fs.writeFileSync(DB_FILE, JSON.stringify(initialStore, null, 2), 'utf8');
       return initialStore;
@@ -318,6 +332,8 @@ function ensureDataFile(): SchemaStore {
     if (!parsed.categories || parsed.categories.length === 0) parsed.categories = INITIAL_CATEGORIES;
     if (!parsed.products || parsed.products.length === 0) parsed.products = INITIAL_PRODUCTS;
     if (!parsed.payment_methods || parsed.payment_methods.length === 0) parsed.payment_methods = INITIAL_PAYMENT_METHODS;
+    if (!parsed.store_config) parsed.store_config = DEFAULT_STORE_CONFIG;
+    if (!parsed.audit_logs) parsed.audit_logs = [];
     return parsed;
   } catch (err) {
     console.error('ensureDataFile error:', err);
@@ -330,6 +346,8 @@ function ensureDataFile(): SchemaStore {
       addresses: [],
       payment_methods: INITIAL_PAYMENT_METHODS,
       users: [],
+      store_config: DEFAULT_STORE_CONFIG,
+      audit_logs: [],
     };
   }
 }
@@ -524,5 +542,37 @@ export const persistentStore = {
     store.payment_methods = store.payment_methods.filter((m) => m.id !== id);
     saveStore(store);
     return true;
+  },
+
+  getStoreConfig(): StoreConfig {
+    const store = ensureDataFile();
+    return store.store_config || DEFAULT_STORE_CONFIG;
+  },
+
+  updateStoreConfig(updates: Partial<StoreConfig>): StoreConfig {
+    const store = ensureDataFile();
+    const current = store.store_config || DEFAULT_STORE_CONFIG;
+    store.store_config = {
+      ...current,
+      ...updates,
+      updated_at: new Date().toISOString(),
+    };
+    saveStore(store);
+    return store.store_config;
+  },
+
+  getAuditLogs(): AdminAuditLog[] {
+    const store = ensureDataFile();
+    return (store.audit_logs || []).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  },
+
+  createAuditLog(log: AdminAuditLog): AdminAuditLog {
+    const store = ensureDataFile();
+    if (!store.audit_logs) store.audit_logs = [];
+    store.audit_logs.unshift(log);
+    saveStore(store);
+    return log;
   },
 };

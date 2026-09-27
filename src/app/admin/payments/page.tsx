@@ -28,9 +28,9 @@ export default async function AdminPaymentsPage() {
       </div>
 
       {/* PAYMENTS TABLE */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
         {payments && payments.length > 0 ? (
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[640px]">
             <thead>
               <tr className="bg-[#0F2C59] text-white font-bold uppercase text-[11px] tracking-wider">
                 <th className="p-4">Order Number</th>

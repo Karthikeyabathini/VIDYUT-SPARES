@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Address, CartItem, PaymentMethod } from '@/types';
-import { createAddress, placeOrder } from '@/lib/actions/orderActions';
+import { createAddress, placeCODOrder } from '@/lib/actions/orderActions';
 import { MapPin, Plus, CheckCircle, CreditCard, Banknote, ShieldAlert, ArrowRight } from 'lucide-react';
 
 interface CheckoutFormProps {
@@ -89,28 +89,23 @@ export default function CheckoutForm({
       return;
     }
 
-    setLoading(true);
+    if (paymentMode === 'COD') {
+      setLoading(true);
+      const res = await placeCODOrder({
+        address_id: selectedAddressId,
+      });
+      setLoading(false);
 
-    const chosenPaymentMethodStr =
-      paymentMode === 'COD'
-        ? 'COD'
-        : paymentMethods.find((m) => m.id === selectedOnlineMethodId)?.display_name || 'ONLINE_UPI';
-
-    const res = await placeOrder({
-      address_id: selectedAddressId,
-      payment_method: chosenPaymentMethodStr,
-    });
-
-    setLoading(false);
-
-    if (res.success && res.data) {
-      if (paymentMode === 'COD') {
+      if (res.success && res.data) {
         router.push(`/order-success?orderId=${res.data.id}`);
       } else {
-        router.push(`/checkout/payment?orderId=${res.data.id}`);
+        alert(res.error || 'Could not complete COD order placement.');
       }
     } else {
-      alert(res.error || 'Could not complete order placement.');
+      // ONLINE PAYMENT: Navigate to payment page with address and method without creating an order
+      const chosenMethod = paymentMethods.find((m) => m.id === selectedOnlineMethodId) || paymentMethods[0];
+      const methodQuery = chosenMethod?.id ? `&methodId=${encodeURIComponent(chosenMethod.id)}` : '';
+      router.push(`/checkout/payment?addressId=${encodeURIComponent(selectedAddressId)}${methodQuery}`);
     }
   };
 
@@ -322,35 +317,6 @@ export default function CheckoutForm({
               </p>
             </div>
           </div>
-
-          {/* ONLINE PAYMENT CHANNEL OPTIONS */}
-          {paymentMode === 'ONLINE' && paymentMethods.length > 0 && (
-            <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                Available Payment Options (Select Preferred Channel):
-              </label>
-              <div className="space-y-2">
-                {paymentMethods.map((m) => (
-                  <label
-                    key={m.id}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-white cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name="onlineMethod"
-                      checked={selectedOnlineMethodId === m.id}
-                      onChange={() => setSelectedOnlineMethodId(m.id)}
-                      className="h-4 w-4 text-[#0F2C59]"
-                    />
-                    <div>
-                      <span className="font-bold text-xs text-slate-900">{m.display_name}</span>
-                      {m.upi_id && <span className="text-[11px] text-slate-500 block font-mono">UPI: {m.upi_id}</span>}
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

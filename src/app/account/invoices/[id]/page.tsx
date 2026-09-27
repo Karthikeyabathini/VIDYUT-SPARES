@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { verifyInvoiceAccess } from '@/lib/actions/invoiceActions';
+import { getStoreConfig } from '@/lib/actions/adminActions';
 import OfficialInvoiceView from '@/components/invoice/OfficialInvoiceView';
 import DownloadInvoiceButton from '@/components/invoice/DownloadInvoiceButton';
 import { ArrowLeft, ShieldAlert } from 'lucide-react';
@@ -16,7 +17,10 @@ export const revalidate = 0;
 
 export default async function InvoicePage({ params }: InvoicePageProps) {
   const { id } = await params;
-  const authRes = await verifyInvoiceAccess(id);
+  const [authRes, storeConfig] = await Promise.all([
+    verifyInvoiceAccess(id),
+    getStoreConfig(),
+  ]);
 
   if (!authRes.authorized || !authRes.invoice) {
     return (
@@ -63,7 +67,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
 
       {/* OFFICIAL INVOICE VIEW */}
       <div className="overflow-x-auto pb-6">
-        <OfficialInvoiceView invoice={invoice} />
+        <OfficialInvoiceView invoice={invoice} storeConfig={storeConfig} />
       </div>
     </div>
   );

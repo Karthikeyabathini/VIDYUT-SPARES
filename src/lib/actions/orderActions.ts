@@ -23,7 +23,7 @@ export async function getAddresses(): Promise<Address[]> {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         return data as Address[];
       }
     } catch {
@@ -80,14 +80,14 @@ export async function createAddress(formData: any): Promise<ActionResponse<Addre
       updated_at: now,
     };
 
-    persistentStore.createAddress(newAddress);
-
     try {
       const adminSupabase = createAdminClient();
       await adminSupabase.from('addresses').insert([newAddress]);
-    } catch {
-      // DB fallback
+    } catch (dbErr) {
+      console.error('createAddress Supabase insert error:', dbErr);
     }
+
+    persistentStore.createAddress(newAddress);
 
     revalidatePath('/checkout');
     revalidatePath('/account');
@@ -97,9 +97,8 @@ export async function createAddress(formData: any): Promise<ActionResponse<Addre
   }
 }
 
-export async function placeOrder(params: {
+export async function placeCODOrder(params: {
   address_id: string;
-  payment_method: 'COD' | string;
 }): Promise<ActionResponse<Order>> {
   try {
     const user = await getActiveUser();
@@ -164,10 +163,6 @@ export async function placeOrder(params: {
     const newOrderId = crypto.randomUUID();
     const now = new Date().toISOString();
 
-    const isCOD = params.payment_method === 'COD';
-    const initialPaymentStatus = isCOD ? 'NOT_REQUIRED' : 'PENDING';
-    const initialOrderStatus = isCOD ? 'CONFIRMED' : 'PENDING';
-
     const orderItemsWithId = itemsToInsert.map((item) => ({
       ...item,
       order_id: newOrderId,
@@ -182,20 +177,18 @@ export async function placeOrder(params: {
       subtotal,
       delivery_charge,
       total_amount,
-      payment_method: params.payment_method,
-      payment_status: initialPaymentStatus as any,
-      order_status: initialOrderStatus as any,
+      payment_method: 'COD',
+      payment_status: 'NOT_REQUIRED' as any,
+      order_status: 'CONFIRMED' as any,
       placed_at: now,
-      confirmed_at: isCOD ? now : null,
+      confirmed_at: now,
       cancellation_status: 'NOT_CANCELLED',
       created_at: now,
       updated_at: now,
       items: orderItemsWithId as any,
     };
 
-    persistentStore.createOrder(newOrder);
-
-    // Try Supabase insert
+    // 1. Try Supabase insert first
     try {
       const adminSupabase = createAdminClient();
       await adminSupabase.from('orders').insert([
@@ -208,20 +201,208 @@ export async function placeOrder(params: {
           subtotal,
           delivery_charge,
           total_amount,
-          payment_method: params.payment_method,
-          payment_status: initialPaymentStatus,
-          order_status: initialOrderStatus,
+          payment_method: 'COD',
+          payment_status: 'NOT_REQUIRED',
+          order_status: 'CONFIRMED',
           placed_at: now,
-          confirmed_at: isCOD ? now : null,
+          confirmed_at: now,
           cancellation_status: 'NOT_CANCELLED',
           created_at: now,
           updated_at: now,
         },
       ]);
       await adminSupabase.from('order_items').insert(orderItemsWithId);
-    } catch {
-      // DB sync fallback
+    } catch (dbErr) {
+      console.error('placeCODOrder Supabase error:', dbErr);
     }
+
+    persistentStore.createOrder(newOrder);
+
+    // 2. Deduct stock for ordered products
+    for (const item of cartItems) {
+      if (item.product) {
+        const newQty = Math.max(0, item.product.stock_quantity - item.quantity);
+        await updateProductStock(item.product_id, newQty);
+      }
+    }
+
+    // 3. Clear customer cart
+    await clearCart();
+
+    revalidatePath('/cart');
+    revalidatePath('/account/orders');
+    revalidatePath('/admin/orders');
+    revalidatePath('/admin');
+    return { success: true, data: newOrder };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to place COD order' };
+  }
+}
+
+export async function submitOnlinePaymentAndCreateOrder(params: {
+  address_id: string;
+  payment_method: string;
+  utr_number: string;
+  proof_file_url: string;
+  payer_name?: string;
+  payer_phone?: string;
+  customer_note?: string;
+}): Promise<ActionResponse<Order>> {
+  try {
+    const user = await getActiveUser();
+    if (!user || (user.role !== 'CUSTOMER' && user.role !== 'ADMIN')) {
+      return {
+        success: false,
+        error: 'Please sign in or create an account to submit payment.',
+      };
+    }
+    const userId = user.id;
+
+    const trimmedUTR = (params.utr_number || '').trim();
+    if (!trimmedUTR || trimmedUTR.length < 6) {
+      return {
+        success: false,
+        error: 'Please enter a valid 12-digit UTR or transaction reference number.',
+      };
+    }
+
+    if (!params.proof_file_url) {
+      return {
+        success: false,
+        error: 'Payment receipt screenshot is required.',
+      };
+    }
+
+    const userAddrs = await getAddresses();
+    const address = userAddrs.find((a) => a.id === params.address_id) || userAddrs[0];
+
+    if (!address) {
+      return { success: false, error: 'Delivery address not found. Please select a valid address.' };
+    }
+
+    const { items: cartItems } = await getCart();
+
+    if (!cartItems || cartItems.length === 0) {
+      return { success: false, error: 'Shopping cart is empty. Please add items to checkout.' };
+    }
+
+    let subtotal = 0;
+    const itemsToInsert = [];
+
+    // Server-side verification of products and inventory
+    for (const item of cartItems) {
+      const product = await getProductById(item.product_id);
+
+      if (!product || !product.is_active) {
+        return { success: false, error: `Product "${product?.name || 'Item'}" is no longer active.` };
+      }
+
+      if (product.stock_quantity < item.quantity) {
+        return {
+          success: false,
+          error: `Insufficient stock for "${product.name}". Only ${product.stock_quantity} available.`,
+        };
+      }
+
+      const itemSubtotal = product.price * item.quantity;
+      subtotal += itemSubtotal;
+
+      itemsToInsert.push({
+        id: crypto.randomUUID(),
+        product_id: product.id,
+        product_name_snapshot: product.name,
+        sku_snapshot: product.sku,
+        price_snapshot: product.price,
+        quantity: item.quantity,
+        subtotal: itemSubtotal,
+        created_at: new Date().toISOString(),
+      });
+    }
+
+    const delivery_charge = subtotal >= 2000 ? 0 : 50;
+    const total_amount = subtotal + delivery_charge;
+
+    const dateStr = new Date().getFullYear();
+    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+    const order_number = `VS-${dateStr}-${randomSuffix}`;
+    const newOrderId = crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    const orderItemsWithId = itemsToInsert.map((item) => ({
+      ...item,
+      order_id: newOrderId,
+    }));
+
+    const newPaymentId = crypto.randomUUID();
+
+    const newOrder: Order = {
+      id: newOrderId,
+      order_number,
+      user_id: userId,
+      address_id: address.id,
+      address_snapshot: address,
+      subtotal,
+      delivery_charge,
+      total_amount,
+      payment_method: params.payment_method || 'Online Payment',
+      payment_status: 'AWAITING_VERIFICATION' as any,
+      order_status: 'PENDING' as any,
+      placed_at: now,
+      confirmed_at: null,
+      cancellation_status: 'NOT_CANCELLED',
+      created_at: now,
+      updated_at: now,
+      items: orderItemsWithId as any,
+    };
+
+    // Create Order, Order Items, and Payment submission in Supabase
+    try {
+      const adminSupabase = createAdminClient();
+      await adminSupabase.from('orders').insert([
+        {
+          id: newOrderId,
+          order_number,
+          user_id: userId,
+          address_id: address.id,
+          address_snapshot: address,
+          subtotal,
+          delivery_charge,
+          total_amount,
+          payment_method: params.payment_method || 'Online Payment',
+          payment_status: 'AWAITING_VERIFICATION',
+          order_status: 'PENDING',
+          placed_at: now,
+          confirmed_at: null,
+          cancellation_status: 'NOT_CANCELLED',
+          created_at: now,
+          updated_at: now,
+        },
+      ]);
+      await adminSupabase.from('order_items').insert(orderItemsWithId);
+
+      await adminSupabase.from('payments').insert([
+        {
+          id: newPaymentId,
+          order_id: newOrderId,
+          payment_method: params.payment_method || 'Online Payment',
+          amount: total_amount,
+          payment_status: 'AWAITING_VERIFICATION',
+          utr_number: trimmedUTR,
+          proof_file_url: params.proof_file_url,
+          payer_name: params.payer_name || user.name || user.email || null,
+          payer_phone: params.payer_phone || user.phone || address.phone || null,
+          payment_date: now.split('T')[0],
+          payment_time: new Date().toLocaleTimeString('en-IN', { hour12: false }),
+          customer_note: params.customer_note || null,
+          created_at: now,
+          updated_at: now,
+        },
+      ]);
+    } catch (dbErr) {
+      console.error('submitOnlinePaymentAndCreateOrder Supabase error:', dbErr);
+    }
+
+    persistentStore.createOrder(newOrder);
 
     // Deduct stock for ordered products
     for (const item of cartItems) {
@@ -231,17 +412,32 @@ export async function placeOrder(params: {
       }
     }
 
-    // Clear customer cart
+    // Clear customer shopping cart
     await clearCart();
 
     revalidatePath('/cart');
     revalidatePath('/account/orders');
     revalidatePath('/admin/orders');
+    revalidatePath('/admin/payments');
     revalidatePath('/admin');
+
     return { success: true, data: newOrder };
   } catch (err: any) {
-    return { success: false, error: err?.message || 'Failed to place order' };
+    return { success: false, error: err?.message || 'Failed to finalize online payment and create order.' };
   }
+}
+
+export async function placeOrder(params: {
+  address_id: string;
+  payment_method: 'COD' | string;
+}): Promise<ActionResponse<Order>> {
+  if (params.payment_method === 'COD') {
+    return placeCODOrder({ address_id: params.address_id });
+  }
+  return {
+    success: false,
+    error: 'Online payment orders are created only after payment proof and UTR submission.',
+  };
 }
 
 export async function cancelCustomerOrder(params: {
@@ -378,6 +574,8 @@ export async function updateAdminOrderStatus(params: {
     } else if (params.newStatus === 'DELIVERED') {
       updatePayload.delivered_at = now;
       updatePayload.completed_at = now;
+      // BUSINESS RULE: Once an order is DELIVERED (including COD), payment status must be updated to PAID (not NOT_REQUIRED)
+      updatePayload.payment_status = 'PAID';
     } else if (params.newStatus === 'CANCELLED') {
       updatePayload.cancelled_at = now;
       if (!existingOrder.cancellation_status || existingOrder.cancellation_status === 'NOT_CANCELLED') {
@@ -417,10 +615,27 @@ export async function updateAdminOrderStatus(params: {
     revalidatePath('/account/orders');
     revalidatePath('/admin');
 
-    return { success: true, data: (updated || existingOrder) as Order };
+    return { success: true, data: (updated || { ...existingOrder, ...updatePayload }) as Order };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Failed to update order status' };
   }
+}
+
+function sanitizeDeliveredOrders(orders: Order[]): Order[] {
+  return orders.map((o) => {
+    if (o.order_status === 'DELIVERED' && o.payment_status !== 'PAID') {
+      return { ...o, payment_status: 'PAID' as any };
+    }
+    return o;
+  });
+}
+
+function sanitizeSingleOrder(order: Order | null): Order | null {
+  if (!order) return null;
+  if (order.order_status === 'DELIVERED' && order.payment_status !== 'PAID') {
+    return { ...order, payment_status: 'PAID' as any };
+  }
+  return order;
 }
 
 export async function getCustomerOrders(): Promise<Order[]> {
@@ -437,13 +652,13 @@ export async function getCustomerOrders(): Promise<Order[]> {
         .order('placed_at', { ascending: false });
 
       if (!error && data && data.length > 0) {
-        return data as Order[];
+        return sanitizeDeliveredOrders(data as Order[]);
       }
     } catch {
       // DB fallback
     }
 
-    return persistentStore.getOrders(user.id);
+    return sanitizeDeliveredOrders(persistentStore.getOrders(user.id));
   } catch (err) {
     console.error('getCustomerOrders error:', err);
     return [];
@@ -460,16 +675,16 @@ export async function getAllAdminOrders(): Promise<Order[]> {
         .order('placed_at', { ascending: false });
 
       if (!error && data && data.length > 0) {
-        return data as Order[];
+        return sanitizeDeliveredOrders(data as Order[]);
       }
     } catch {
       // DB fallback
     }
 
-    return persistentStore.getOrders();
+    return sanitizeDeliveredOrders(persistentStore.getOrders());
   } catch (err) {
     console.error('getAllAdminOrders exception:', err);
-    return persistentStore.getOrders();
+    return sanitizeDeliveredOrders(persistentStore.getOrders());
   }
 }
 
@@ -482,12 +697,12 @@ export async function getOrderByNumber(orderNumber: string): Promise<Order | nul
       .eq('order_number', orderNumber)
       .maybeSingle();
 
-    if (!error && data) return data as Order;
+    if (!error && data) return sanitizeSingleOrder(data as Order);
   } catch {
     // Fallback
   }
 
-  return persistentStore.getOrderById(orderNumber);
+  return sanitizeSingleOrder(persistentStore.getOrderById(orderNumber));
 }
 
 export async function getOrderById(orderId: string): Promise<Order | null> {
@@ -499,10 +714,10 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
       .eq('id', orderId)
       .maybeSingle();
 
-    if (!error && data) return data as Order;
+    if (!error && data) return sanitizeSingleOrder(data as Order);
   } catch {
     // Fallback
   }
 
-  return persistentStore.getOrderById(orderId);
+  return sanitizeSingleOrder(persistentStore.getOrderById(orderId));
 }

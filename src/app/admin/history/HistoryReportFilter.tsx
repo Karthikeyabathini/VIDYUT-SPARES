@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Download, Filter, RefreshCw } from 'lucide-react';
+import { Download, Filter, RefreshCw, Calendar } from 'lucide-react';
 
 export default function HistoryReportFilter({
   currentParams,
@@ -18,16 +18,20 @@ export default function HistoryReportFilter({
   const [orderStatus, setOrderStatus] = useState(currentParams.orderStatus || 'ALL');
   const [paymentStatus, setPaymentStatus] = useState(currentParams.paymentStatus || 'ALL');
   const [paymentMethod, setPaymentMethod] = useState(currentParams.paymentMethod || 'ALL');
-  const [search, setSearch] = useState(currentParams.search || '');
 
   const applyFilters = () => {
+    // DATE CONSTRAINT VALIDATION: fromDate <= toDate
+    if (fromDate && toDate && fromDate > toDate) {
+      alert('Invalid Date Range: "From Date" cannot be after "To Date". Please adjust your date selection.');
+      return;
+    }
+
     const query = new URLSearchParams();
     if (fromDate) query.set('fromDate', fromDate);
     if (toDate) query.set('toDate', toDate);
     if (orderStatus !== 'ALL') query.set('orderStatus', orderStatus);
     if (paymentStatus !== 'ALL') query.set('paymentStatus', paymentStatus);
     if (paymentMethod !== 'ALL') query.set('paymentMethod', paymentMethod);
-    if (search.trim()) query.set('search', search.trim());
 
     router.push(`/admin/history?${query.toString()}`);
   };
@@ -64,7 +68,7 @@ export default function HistoryReportFilter({
 
   const handleExportCSV = () => {
     if (filteredOrders.length === 0) {
-      alert('No orders available to export.');
+      alert('No orders available to export for the selected filter criteria.');
       return;
     }
 
@@ -98,7 +102,7 @@ export default function HistoryReportFilter({
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `VIDYUT_SPARES_Report_${fromDate || 'All'}_to_${toDate || 'Today'}.csv`);
+    link.setAttribute('download', `VIDYUT_SPARES_Business_Report_${fromDate || 'All'}_to_${toDate || 'Today'}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -145,25 +149,25 @@ export default function HistoryReportFilter({
         </button>
       </div>
 
-      {/* CUSTOM DATE & FILTER SELECTORS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+      {/* CUSTOM DATE & FILTER SELECTORS (NO SEARCH KEYWORD) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div>
-          <label className="font-bold text-slate-700 block mb-1">From Date (IST)</label>
+          <label className="font-bold text-slate-700 block mb-1">From Date (Start)</label>
           <input
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            className="w-full p-2 rounded-lg border border-slate-300 bg-white"
+            className="w-full p-2.5 rounded-lg border border-slate-300 bg-white font-bold"
           />
         </div>
 
         <div>
-          <label className="font-bold text-slate-700 block mb-1">To Date (IST)</label>
+          <label className="font-bold text-slate-700 block mb-1">To Date (End)</label>
           <input
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-            className="w-full p-2 rounded-lg border border-slate-300 bg-white"
+            className="w-full p-2.5 rounded-lg border border-slate-300 bg-white font-bold"
           />
         </div>
 
@@ -172,7 +176,7 @@ export default function HistoryReportFilter({
           <select
             value={orderStatus}
             onChange={(e) => setOrderStatus(e.target.value)}
-            className="w-full p-2 rounded-lg border border-slate-300 bg-white font-semibold"
+            className="w-full p-2.5 rounded-lg border border-slate-300 bg-white font-semibold"
           >
             <option value="ALL">ALL Statuses</option>
             <option value="PENDING">PENDING</option>
@@ -190,7 +194,7 @@ export default function HistoryReportFilter({
           <select
             value={paymentStatus}
             onChange={(e) => setPaymentStatus(e.target.value)}
-            className="w-full p-2 rounded-lg border border-slate-300 bg-white font-semibold"
+            className="w-full p-2.5 rounded-lg border border-slate-300 bg-white font-semibold"
           >
             <option value="ALL">ALL Payment Statuses</option>
             <option value="AWAITING_VERIFICATION">AWAITING_VERIFICATION</option>
@@ -200,23 +204,12 @@ export default function HistoryReportFilter({
           </select>
         </div>
 
-        <div>
-          <label className="font-bold text-slate-700 block mb-1">Search Keyword</label>
-          <input
-            type="text"
-            placeholder="Order / UTR / Customer..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-2 rounded-lg border border-slate-300 bg-white"
-          />
-        </div>
-
-        <div className="flex items-end gap-2">
+        <div className="flex items-end">
           <button
             onClick={applyFilters}
-            className="w-full bg-[#0F2C59] hover:bg-blue-900 text-white font-bold py-2 rounded-lg text-xs"
+            className="w-full bg-[#0F2C59] hover:bg-blue-900 text-white font-bold py-2.5 rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5"
           >
-            Apply Filters
+            <Filter className="h-4 w-4" /> Apply Report Filters
           </button>
         </div>
       </div>

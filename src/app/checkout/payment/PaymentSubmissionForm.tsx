@@ -3,16 +3,25 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Order, PaymentMethod } from '@/types';
-import { submitPaymentProof } from '@/lib/actions/paymentActions';
+import { submitOnlinePaymentAndCreateOrder } from '@/lib/actions/orderActions';
 import { uploadPaymentProofImage } from '@/lib/actions/storageActions';
 import { Upload, CheckCircle2, ShieldAlert, ArrowRight, FileImage } from 'lucide-react';
 
 interface PaymentSubmissionFormProps {
-  order: Order;
+  order?: Order | null;
+  addressId?: string;
+  selectedMethodId?: string;
+  amountPayable?: number;
   paymentMethods: PaymentMethod[];
 }
 
-export default function PaymentSubmissionForm({ order, paymentMethods }: PaymentSubmissionFormProps) {
+export default function PaymentSubmissionForm({
+  order,
+  addressId,
+  selectedMethodId,
+  amountPayable,
+  paymentMethods,
+}: PaymentSubmissionFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [proofPreview, setProofPreview] = useState<string | null>(null);
@@ -20,9 +29,16 @@ export default function PaymentSubmissionForm({ order, paymentMethods }: Payment
   const todayStr = new Date().toISOString().split('T')[0];
   const nowTimeStr = new Date().toTimeString().slice(0, 5);
 
+  const initialMethod =
+    paymentMethods.find((m) => m.id === selectedMethodId)?.display_name ||
+    paymentMethods[0]?.display_name ||
+    'Online UPI / QR';
+
+  const totalAmount = order ? order.total_amount : amountPayable || 0;
+
   const [form, setForm] = useState({
-    payment_method: paymentMethods[0]?.display_name || 'PhonePe / UPI',
-    amount: order.total_amount,
+    payment_method: initialMethod,
+    amount: totalAmount,
     utr_number: '',
     proof_file_url: '',
     payer_name: '',
@@ -40,7 +56,7 @@ export default function PaymentSubmissionForm({ order, paymentMethods }: Payment
         return;
       }
 
-      // Convert file to Base64 data URL for reliable proof verification storage
+      // Convert file to Base64 data URL for proof verification storage
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
@@ -53,8 +69,10 @@ export default function PaymentSubmissionForm({ order, paymentMethods }: Payment
 
   const handleSubmitProof = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.utr_number.trim()) {
-      alert('Please enter your 12-digit UTR / Transaction Reference Number');
+
+    const trimmedUTR = form.utr_number.trim();
+    if (!trimmedUTR || trimmedUTR.length < 6) {
+      alert('Please enter a valid 12-digit UTR / Transaction Reference Number');
       return;
     }
 
@@ -67,29 +85,33 @@ export default function PaymentSubmissionForm({ order, paymentMethods }: Payment
 
     let finalProofUrl = form.proof_file_url;
     if (form.proof_file_url && form.proof_file_url.startsWith('data:image')) {
-      const uploadRes = await uploadPaymentProofImage(form.proof_file_url, `utr_${form.utr_number.trim()}`);
+      const uploadRes = await uploadPaymentProofImage(form.proof_file_url, `utr_${trimmedUTR}`);
       if (uploadRes.success && uploadRes.data) {
         finalProofUrl = uploadRes.data;
       }
     }
 
-    const res = await submitPaymentProof({
-      order_id: order.id,
+    const targetAddressId = addressId || order?.address_id || '';
+    if (!targetAddressId) {
+      setLoading(false);
+      alert('Missing delivery address. Please return to checkout and select an address.');
+      return;
+    }
+
+    const res = await submitOnlinePaymentAndCreateOrder({
+      address_id: targetAddressId,
       payment_method: form.payment_method,
-      amount: form.amount,
-      utr_number: form.utr_number.trim(),
+      utr_number: trimmedUTR,
       proof_file_url: finalProofUrl,
       payer_name: form.payer_name || undefined,
       payer_phone: form.payer_phone || undefined,
-      payment_date: form.payment_date,
-      payment_time: form.payment_time,
       customer_note: form.customer_note || undefined,
     });
 
     setLoading(false);
 
-    if (res.success) {
-      router.push(`/order-success?orderId=${order.id}&paymentStatus=submitted`);
+    if (res.success && res.data) {
+      router.push(`/order-success?orderId=${res.data.id}&paymentStatus=submitted`);
     } else {
       alert(res.error || 'Failed to submit payment proof');
     }
@@ -144,10 +166,10 @@ export default function PaymentSubmissionForm({ order, paymentMethods }: Payment
           <input
             type="number"
             required
+            readOnly
             step="0.01"
             value={form.amount}
-            onChange={(e) => setForm({ ...form, amount: parseFloat(e.target.value) || 0 })}
-            className="w-full p-2.5 rounded-lg border border-slate-300 font-bold text-slate-900 bg-slate-50"
+            className="w-full p-2.5 rounded-lg border border-slate-300 font-bold text-slate-900 bg-slate-100 cursor-not-allowed"
           />
         </div>
 
@@ -241,12 +263,12 @@ export default function PaymentSubmissionForm({ order, paymentMethods }: Payment
         disabled={loading || !form.proof_file_url || !form.utr_number}
         className="w-full py-4 px-6 rounded-xl font-bold text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 flex items-center justify-center gap-2 shadow-md transition-colors disabled:opacity-50"
       >
-        {loading ? 'Submitting Proof...' : 'Submit Payment Proof for Admin Verification'} <ArrowRight className="h-4 w-4" />
+        {loading ? 'Submitting Proof & Finalizing Order...' : 'Submit Payment Details'} <ArrowRight className="h-4 w-4" />
       </button>
 
       <div className="bg-slate-100 p-3 rounded-lg border border-slate-200 text-[11px] text-slate-600 flex items-center gap-2">
         <ShieldAlert className="h-4 w-4 text-amber-600 shrink-0" />
-        <span>Your order payment status will become AWAITING_VERIFICATION until manual review.</span>
+        <span>Your order will be created with status PENDING and payment status AWAITING_VERIFICATION upon submission.</span>
       </div>
     </form>
   );

@@ -1,18 +1,39 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { MapPin, Phone, Mail, ShieldCheck } from 'lucide-react';
 import VidyutLogo from '@/components/common/VidyutLogo';
+import { getStoreConfig } from '@/lib/actions/adminActions';
+import { StoreConfig } from '@/types';
 
 export default function Footer() {
   const pathname = usePathname();
+  const [storeConfig, setStoreConfig] = useState<StoreConfig | null>(null);
+
+  useEffect(() => {
+    async function loadConfig() {
+      try {
+        const config = await getStoreConfig();
+        setStoreConfig(config);
+      } catch {
+        // Fallback to default
+      }
+    }
+    loadConfig();
+  }, []);
 
   if (pathname?.startsWith('/admin')) {
     return null;
   }
+
+  const businessName = storeConfig?.business_name || 'VIDYUT SPARES';
+  const phone = storeConfig?.store_phone || '9440146599';
+  const email = storeConfig?.store_email || 'vidyutspares@gmail.com';
+  const address = storeConfig?.store_address || '11-39-15, Katurivari St, Beside 1 Town Police Station, Tarapet, Vijayawada, Andhra Pradesh 520001, India';
+
   return (
     <footer className="bg-slate-950 text-slate-300 border-t border-slate-800 pt-12 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,7 +44,7 @@ export default function Footer() {
               <VidyutLogo variant="footer" showText textClassName="font-extrabold text-lg text-white tracking-tight" />
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Your trusted electrical spares partner supplying genuine switches, copper wires, circuit breakers, LED lights, and industrial installation components in Vijayawada, Andhra Pradesh.
+              Your trusted electrical spares partner supplying genuine switches, copper wires, circuit breakers, LED lights, and industrial installation components.
             </p>
             <div className="flex items-center gap-2 text-xs text-amber-400 font-semibold bg-slate-900 p-2.5 rounded-lg border border-slate-800 w-fit">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
@@ -49,7 +70,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/about" className="hover:text-amber-400 transition-colors">
-                  About VIDYUT SPARES
+                  About {businessName}
                 </Link>
               </li>
               <li>
@@ -107,20 +128,18 @@ export default function Footer() {
             <ul className="space-y-3 text-xs">
               <li className="flex items-start gap-2.5">
                 <MapPin className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
-                <span>
-                  11-39-15, Katurivari St, Beside 1 Town Police Station, Tarapet, Vijayawada, Andhra Pradesh 520001, India
-                </span>
+                <span>{address}</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="h-4 w-4 text-amber-400 shrink-0" />
-                <a href="tel:9440146599" className="hover:text-white font-semibold">
-                  +91 9440146599
+                <a href={`tel:${phone}`} className="hover:text-white font-semibold">
+                  +91 {phone}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="h-4 w-4 text-amber-400 shrink-0" />
-                <a href="mailto:vidyutspares@gmail.com" className="hover:text-white">
-                  vidyutspares@gmail.com
+                <a href={`mailto:${email}`} className="hover:text-white">
+                  {email}
                 </a>
               </li>
             </ul>
@@ -129,8 +148,8 @@ export default function Footer() {
 
         {/* BOTTOM COPYRIGHT */}
         <div className="border-t border-slate-800 pt-6 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
-          <p>© 2026 VIDYUT SPARES. All Rights Reserved.</p>
-          <p className="text-slate-600">Tarapet, Vijayawada • Official E-Commerce Store</p>
+          <p>© {new Date().getFullYear()} {businessName}. All Rights Reserved.</p>
+          <p className="text-slate-600">Official E-Commerce Store</p>
         </div>
       </div>
     </footer>
