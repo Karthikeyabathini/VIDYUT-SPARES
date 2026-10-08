@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { registerCustomer } from '@/lib/actions/authActions';
-import { User, Mail, Phone, Lock, ArrowRight, ShieldAlert } from 'lucide-react';
+import { User, Mail, Phone, Lock, ArrowRight, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import VidyutLogo from '@/components/common/VidyutLogo';
 
 function RegisterForm() {
@@ -21,21 +21,52 @@ function RegisterForm() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successNotice, setSuccessNotice] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccessNotice(null);
 
     const res = await registerCustomer(form);
     setLoading(false);
 
     if (res.success) {
-      window.location.href = redirectTo;
+      if (res.requiresConfirmation) {
+        setSuccessNotice(
+          res.message ||
+            `Account created successfully! A confirmation link has been sent to ${form.email}. Please check your email inbox and click the link to verify your account before signing in.`
+        );
+      } else {
+        window.location.href = redirectTo;
+      }
     } else {
       setError(res.error || 'Failed to register account');
     }
   };
+
+  if (successNotice) {
+    return (
+      <div className="space-y-4 bg-emerald-50 border border-emerald-300 text-emerald-950 p-6 rounded-2xl text-xs space-y-3">
+        <div className="flex items-center gap-2 font-extrabold text-sm text-emerald-900">
+          <CheckCircle2 className="h-6 w-6 text-emerald-600 shrink-0" />
+          <span>Email Verification Link Sent!</span>
+        </div>
+        <p className="text-slate-700 leading-relaxed font-medium">
+          {successNotice}
+        </p>
+        <div className="pt-3 border-t border-emerald-200/80">
+          <Link
+            href="/login"
+            className="w-full block text-center py-2.5 px-4 rounded-xl font-bold bg-[#0F2C59] text-white hover:bg-blue-900 transition-colors shadow-sm"
+          >
+            Go to Sign In Page
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 text-xs">
