@@ -24,6 +24,7 @@ export async function registerCustomer(formData: {
     const adminSupabase = createAdminClient();
 
     let userId: string | null = null;
+    let requiresConfirmation = false;
 
     // 1. Try public signUp
     const supabase = await createClient();
@@ -39,14 +40,22 @@ export async function registerCustomer(formData: {
       },
     });
 
+    if (authError) {
+      return { success: false, error: (authError as any)?.message || 'Registration failed' };
+    }
+
     if (authData?.user) {
       userId = authData.user.id;
+      // If session is null or email is not confirmed, require email confirmation
+      if (!authData.session || !authData.user.email_confirmed_at) {
+        requiresConfirmation = true;
+      }
     } else {
-      // 2. Fallback to Service Role user creation
+      // 2. Fallback to Service Role user creation (require confirmation)
       const { data: adminCreated } = await adminSupabase.auth.admin.createUser({
         email: validated.email,
         password: validated.password,
-        email_confirm: true,
+        email_confirm: false,
         user_metadata: {
           name: validated.name,
           phone: validated.phone,
@@ -56,6 +65,7 @@ export async function registerCustomer(formData: {
 
       if (adminCreated?.user) {
         userId = adminCreated.user.id;
+        requiresConfirmation = true;
       } else {
         const { data: authList } = await adminSupabase.auth.admin.listUsers();
         const matched = authList?.users?.find(
@@ -64,6 +74,9 @@ export async function registerCustomer(formData: {
 
         if (matched) {
           userId = matched.id;
+          if (!matched.email_confirmed_at) {
+            requiresConfirmation = true;
+          }
         } else {
           const { data: existingUser } = await adminSupabase
             .from('users')
@@ -79,7 +92,7 @@ export async function registerCustomer(formData: {
     }
 
     if (!userId) {
-      return { success: false, error: authError?.message || 'Could not create account.' };
+      return { success: false, error: 'Could not create account. Please check your details or try again.' };
     }
 
     // Upsert customer profile into public.users table
@@ -98,15 +111,6 @@ export async function registerCustomer(formData: {
       .select()
       .single();
 
-    cookieStore.set('vs_customer_session', userId, {
-      path: '/',
-      httpOnly: true,
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-      sameSite: 'lax',
-    });
-
-    await mergeGuestCartToCustomer(userId);
-
     const userProfile: UserProfile = (profile || {
       id: userId,
       name: validated.name,
@@ -118,6 +122,25 @@ export async function registerCustomer(formData: {
       updated_at: new Date().toISOString(),
     }) as UserProfile;
 
+    // IF EMAIL CONFIRMATION IS REQUIRED: DO NOT SET SESSION COOKIE!
+    if (requiresConfirmation) {
+      return {
+        success: true,
+        requiresConfirmation: true,
+        message: `Account created successfully! A confirmation link has been sent to ${validated.email}. Please check your email inbox and click the confirmation link before signing in.`,
+        data: userProfile,
+      };
+    }
+
+    // IF AUTO-CONFIRMED / NO CONFIRMATION REQUIRED BY SUPABASE:
+    cookieStore.set('vs_customer_session', userId, {
+      path: '/',
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      sameSite: 'lax',
+    });
+
+    await mergeGuestCartToCustomer(userId);
     revalidatePath('/', 'layout');
     return { success: true, data: userProfile };
   } catch (err: any) {
@@ -141,7 +164,29 @@ export async function loginUser(formData: {
       password: validated.password,
     });
 
+    if (authError) {
+      const msgLower = authError.message.toLowerCase();
+      if (
+        msgLower.includes('email not confirmed') ||
+        msgLower.includes('email_not_confirmed') ||
+        msgLower.includes('confirm')
+      ) {
+        return {
+          success: false,
+          error: 'Email not confirmed yet. Please check your email inbox and click the confirmation link before signing in.',
+        };
+      }
+    }
+
     if (!authError && authData.user) {
+      if (!authData.user.email_confirmed_at && authData.user.confirmation_sent_at) {
+        await supabase.auth.signOut();
+        return {
+          success: false,
+          error: 'Email not confirmed yet. Please check your email inbox and click the confirmation link before signing in.',
+        };
+      }
+
       let { data: profile } = await adminSupabase
         .from('users')
         .select('*')
@@ -183,7 +228,7 @@ export async function loginUser(formData: {
       return { success: true, data: profile as UserProfile };
     }
 
-    // 2. Service Role Fallback for Existing Registered User
+    // 2. Service Role Check: Ensure email is confirmed before fallback login
     const { data: existingProfile } = await adminSupabase
       .from('users')
       .select('*')
@@ -193,6 +238,14 @@ export async function loginUser(formData: {
     if (existingProfile) {
       if (!existingProfile.is_active) {
         return { success: false, error: 'Your account has been deactivated. Contact VIDYUT SPARES.' };
+      }
+
+      const { data: authUserObj } = await adminSupabase.auth.admin.getUserById(existingProfile.id);
+      if (authUserObj?.user && !authUserObj.user.email_confirmed_at && authUserObj.user.confirmation_sent_at) {
+        return {
+          success: false,
+          error: 'Email not confirmed yet. Please check your email inbox and click the confirmation link before signing in.',
+        };
       }
 
       cookieStore.set('vs_customer_session', existingProfile.id, {

@@ -80,13 +80,13 @@
       "category_id": "c1111111-1111-1111-1111-111111111111",
       "brand": "spares",
       "price": 799,
-      "stock_quantity": 44,
+      "stock_quantity": 41,
       "low_stock_threshold": 5,
       "description": null,
       "image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790347798194_lbs_spares",
       "is_active": true,
       "created_at": "2026-09-25T14:49:59.349Z",
-      "updated_at": "2026-09-27T11:17:05.084Z"
+      "updated_at": "2026-10-08T13:33:17.057Z"
     },
     {
       "id": "7fc9da80-09f9-4c22-82ab-8a3234efb4bb",
@@ -96,13 +96,13 @@
       "category_id": "c1111111-1111-1111-1111-111111111111",
       "brand": "11k",
       "price": 998,
-      "stock_quantity": 44,
+      "stock_quantity": 39,
       "low_stock_threshold": 5,
       "description": null,
       "image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790347757268_11k_station",
       "is_active": true,
       "created_at": "2026-09-25T14:49:19.048Z",
-      "updated_at": "2026-09-27T11:17:05.168Z"
+      "updated_at": "2026-10-08T15:44:14.610Z"
     },
     {
       "id": "d856bf4b-b191-443d-a464-79c30ff15713",
@@ -112,13 +112,13 @@
       "category_id": "c1111111-1111-1111-1111-111111111111",
       "brand": "heater",
       "price": 599,
-      "stock_quantity": 48,
+      "stock_quantity": 47,
       "low_stock_threshold": 5,
       "description": null,
       "image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790347726566_heater",
       "is_active": true,
       "created_at": "2026-09-25T14:48:47.539Z",
-      "updated_at": "2026-09-27T08:17:17.348Z"
+      "updated_at": "2026-10-08T13:18:53.010Z"
     },
     {
       "id": "783285a4-437c-42be-8bfe-600d3e7f930e",
@@ -154,6 +154,232 @@
     }
   ],
   "orders": [
+    {
+      "id": "5ae28dde-0d37-49fa-9e6a-d33743f6119f",
+      "order_number": "VS-2026-465592",
+      "user_id": "8ab49fd4-bada-4c65-a968-d6ca6a2da30e",
+      "address_id": "bd0e7b4f-1fff-41ac-88c3-925313ef41c5",
+      "address_snapshot": {
+        "id": "bd0e7b4f-1fff-41ac-88c3-925313ef41c5",
+        "user_id": "8ab49fd4-bada-4c65-a968-d6ca6a2da30e",
+        "full_name": "vivek",
+        "phone": "8484499665",
+        "address_line_1": "14-6-7",
+        "address_line_2": "",
+        "city": "Vijayawada",
+        "state": "Andhra Pradesh",
+        "pincode": "533308",
+        "landmark": "",
+        "is_default": true,
+        "created_at": "2026-10-08T15:42:42.966Z",
+        "updated_at": "2026-10-08T15:42:42.966Z"
+      },
+      "subtotal": 998,
+      "delivery_charge": 50,
+      "total_amount": 1048,
+      "payment_method": "COD",
+      "payment_status": "PAID",
+      "order_status": "DELIVERED",
+      "placed_at": "2026-10-08T15:44:13.734Z",
+      "confirmed_at": "2026-10-08T15:44:13.734Z",
+      "cancellation_status": "NOT_CANCELLED",
+      "created_at": "2026-10-08T15:44:13.734Z",
+      "updated_at": "2026-10-08T15:45:45.346Z",
+      "items": [
+        {
+          "id": "b5e12ff6-3b57-47ff-a781-f187c999d21c",
+          "product_id": "7fc9da80-09f9-4c22-82ab-8a3234efb4bb",
+          "product_name_snapshot": "11k station",
+          "sku_snapshot": "VS-XXK-9102",
+          "price_snapshot": 998,
+          "quantity": 1,
+          "subtotal": 998,
+          "created_at": "2026-10-08T15:44:13.734Z",
+          "order_id": "5ae28dde-0d37-49fa-9e6a-d33743f6119f"
+        }
+      ],
+      "delivered_at": "2026-10-08T15:45:45.268Z",
+      "completed_at": "2026-10-08T15:45:45.268Z"
+    },
+    {
+      "id": "220b8a8e-d007-4d00-9073-6a621e271b08",
+      "order_number": "VS-2026-502863",
+      "user_id": "25cb1109-b580-48e4-b341-ead4f982914b",
+      "address_id": "38db8558-82e3-46dd-8049-1ff8202ac1ea",
+      "address_snapshot": {
+        "id": "38db8558-82e3-46dd-8049-1ff8202ac1ea",
+        "user_id": "25cb1109-b580-48e4-b341-ead4f982914b",
+        "full_name": "vishnu",
+        "phone": "9182850359",
+        "address_line_1": "kovvada/12-45",
+        "address_line_2": "",
+        "city": "bhimavaram",
+        "state": "Andhra Pradesh",
+        "pincode": "522021",
+        "landmark": "",
+        "is_default": true,
+        "created_at": "2026-10-08T13:33:10.382Z",
+        "updated_at": "2026-10-08T13:33:10.382Z"
+      },
+      "subtotal": 2795,
+      "delivery_charge": 0,
+      "total_amount": 2795,
+      "payment_method": "COD",
+      "payment_status": "NOT_REQUIRED",
+      "order_status": "CONFIRMED",
+      "placed_at": "2026-10-08T13:33:16.640Z",
+      "confirmed_at": "2026-10-08T13:33:16.640Z",
+      "cancellation_status": "NOT_CANCELLED",
+      "created_at": "2026-10-08T13:33:16.640Z",
+      "updated_at": "2026-10-08T13:33:16.640Z",
+      "items": [
+        {
+          "id": "f461ce24-b7ca-4f0d-b2d1-efd0635c9972",
+          "product_id": "5ac864f7-9809-44b9-951e-16ad52cca96c",
+          "product_name_snapshot": "lbs spares",
+          "sku_snapshot": "VS-LBS-7220",
+          "price_snapshot": 799,
+          "quantity": 1,
+          "subtotal": 799,
+          "created_at": "2026-10-08T13:33:16.582Z",
+          "order_id": "220b8a8e-d007-4d00-9073-6a621e271b08"
+        },
+        {
+          "id": "1c63e752-c998-4b5e-be29-0efa1a26127b",
+          "product_id": "7fc9da80-09f9-4c22-82ab-8a3234efb4bb",
+          "product_name_snapshot": "11k station",
+          "sku_snapshot": "VS-XXK-9102",
+          "price_snapshot": 998,
+          "quantity": 2,
+          "subtotal": 1996,
+          "created_at": "2026-10-08T13:33:16.640Z",
+          "order_id": "220b8a8e-d007-4d00-9073-6a621e271b08"
+        }
+      ]
+    },
+    {
+      "id": "7982d275-57dd-4163-8618-1d4e03a141e9",
+      "order_number": "VS-2026-198018",
+      "user_id": "b15e70c9-0bb5-4a46-8dde-e3e05b5c1934",
+      "address_id": "9a9874f4-5d3e-4d74-966c-a2ae15ceb506",
+      "address_snapshot": {
+        "id": "9a9874f4-5d3e-4d74-966c-a2ae15ceb506",
+        "user_id": "b15e70c9-0bb5-4a46-8dde-e3e05b5c1934",
+        "full_name": "prasad",
+        "phone": "8356549862",
+        "address_line_1": "nrt/12-98",
+        "address_line_2": "",
+        "city": "nrt",
+        "state": "Andhra Pradesh",
+        "pincode": "522601",
+        "landmark": "",
+        "is_default": true,
+        "created_at": "2026-10-08T13:18:12.701Z",
+        "updated_at": "2026-10-08T13:18:12.701Z"
+      },
+      "subtotal": 2396,
+      "delivery_charge": 0,
+      "total_amount": 2396,
+      "payment_method": "VIDYUT SPARES PhonePe / GPay Number",
+      "payment_status": "AWAITING_VERIFICATION",
+      "order_status": "PENDING",
+      "placed_at": "2026-10-08T13:18:52.323Z",
+      "confirmed_at": null,
+      "cancellation_status": "NOT_CANCELLED",
+      "created_at": "2026-10-08T13:18:52.323Z",
+      "updated_at": "2026-10-08T13:18:52.323Z",
+      "items": [
+        {
+          "id": "fa357d2e-5dbf-462c-bd66-ff195dcfda1e",
+          "product_id": "5ac864f7-9809-44b9-951e-16ad52cca96c",
+          "product_name_snapshot": "lbs spares",
+          "sku_snapshot": "VS-LBS-7220",
+          "price_snapshot": 799,
+          "quantity": 1,
+          "subtotal": 799,
+          "created_at": "2026-10-08T13:18:52.195Z",
+          "order_id": "7982d275-57dd-4163-8618-1d4e03a141e9"
+        },
+        {
+          "id": "af1b3787-dbfc-494e-a10a-a66e62fc2404",
+          "product_id": "7fc9da80-09f9-4c22-82ab-8a3234efb4bb",
+          "product_name_snapshot": "11k station",
+          "sku_snapshot": "VS-XXK-9102",
+          "price_snapshot": 998,
+          "quantity": 1,
+          "subtotal": 998,
+          "created_at": "2026-10-08T13:18:52.260Z",
+          "order_id": "7982d275-57dd-4163-8618-1d4e03a141e9"
+        },
+        {
+          "id": "b8a3990b-81c8-4014-97c0-f8fdb3bc99eb",
+          "product_id": "d856bf4b-b191-443d-a464-79c30ff15713",
+          "product_name_snapshot": "heater",
+          "sku_snapshot": "VS-HEA-3403",
+          "price_snapshot": 599,
+          "quantity": 1,
+          "subtotal": 599,
+          "created_at": "2026-10-08T13:18:52.323Z",
+          "order_id": "7982d275-57dd-4163-8618-1d4e03a141e9"
+        }
+      ]
+    },
+    {
+      "id": "6dea9494-a303-436d-b4d6-0b48567b5a3a",
+      "order_number": "VS-2026-743119",
+      "user_id": "174542ce-4ea0-47b4-9814-2a8c9b37c41b",
+      "address_id": "b6640a92-f6d0-4aa3-9e47-0eaeb3b942b2",
+      "address_snapshot": {
+        "id": "b6640a92-f6d0-4aa3-9e47-0eaeb3b942b2",
+        "user_id": "493daa5d-91c3-4710-827c-839294c18a68",
+        "full_name": "kethan krishna",
+        "phone": "9185264789",
+        "address_line_1": "mandapet",
+        "address_line_2": "",
+        "city": "mandapet",
+        "state": "Andhra Pradesh",
+        "pincode": "534202",
+        "landmark": "",
+        "is_default": true,
+        "created_at": "2026-09-25T11:35:37.998Z",
+        "updated_at": "2026-09-25T11:35:37.998Z"
+      },
+      "subtotal": 1797,
+      "delivery_charge": 50,
+      "total_amount": 1847,
+      "payment_method": "COD",
+      "payment_status": "NOT_REQUIRED",
+      "order_status": "CONFIRMED",
+      "placed_at": "2026-10-08T13:15:13.833Z",
+      "confirmed_at": "2026-10-08T13:15:13.833Z",
+      "cancellation_status": "NOT_CANCELLED",
+      "created_at": "2026-10-08T13:15:13.833Z",
+      "updated_at": "2026-10-08T13:15:13.833Z",
+      "items": [
+        {
+          "id": "39809e87-b430-4040-81e4-29dfc552fa03",
+          "product_id": "5ac864f7-9809-44b9-951e-16ad52cca96c",
+          "product_name_snapshot": "lbs spares",
+          "sku_snapshot": "VS-LBS-7220",
+          "price_snapshot": 799,
+          "quantity": 1,
+          "subtotal": 799,
+          "created_at": "2026-10-08T13:15:13.734Z",
+          "order_id": "6dea9494-a303-436d-b4d6-0b48567b5a3a"
+        },
+        {
+          "id": "37bdbb2f-dd93-4cde-b4f9-754d2b7ac5ba",
+          "product_id": "7fc9da80-09f9-4c22-82ab-8a3234efb4bb",
+          "product_name_snapshot": "11k station",
+          "sku_snapshot": "VS-XXK-9102",
+          "price_snapshot": 998,
+          "quantity": 1,
+          "subtotal": 998,
+          "created_at": "2026-10-08T13:15:13.833Z",
+          "order_id": "6dea9494-a303-436d-b4d6-0b48567b5a3a"
+        }
+      ]
+    },
     {
       "id": "979a6ab9-33f1-40f1-8f67-0c20734b1452",
       "order_number": "VS-2026-163042",
@@ -998,6 +1224,89 @@
     }
   ],
   "payments": [
+    {
+      "id": "5a78819f-ea47-4e30-a4dc-e42f68e655e1",
+      "order_id": "7982d275-57dd-4163-8618-1d4e03a141e9",
+      "payment_method": "VIDYUT SPARES PhonePe / GPay Number",
+      "amount": 2396,
+      "payment_status": "AWAITING_VERIFICATION",
+      "utr_number": "789456981236",
+      "proof_file_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/payment-proofs/proofs/1791465529456_utr_789456981236",
+      "payer_name": "prasad",
+      "payer_phone": "8309338815",
+      "payment_date": "2026-10-08",
+      "payment_time": "18:48:52",
+      "customer_note": null,
+      "created_at": "2026-10-08T13:18:52.323Z",
+      "updated_at": "2026-10-08T13:18:52.323Z",
+      "order": {
+        "id": "7982d275-57dd-4163-8618-1d4e03a141e9",
+        "order_number": "VS-2026-198018",
+        "user_id": "b15e70c9-0bb5-4a46-8dde-e3e05b5c1934",
+        "address_id": "9a9874f4-5d3e-4d74-966c-a2ae15ceb506",
+        "address_snapshot": {
+          "id": "9a9874f4-5d3e-4d74-966c-a2ae15ceb506",
+          "user_id": "b15e70c9-0bb5-4a46-8dde-e3e05b5c1934",
+          "full_name": "prasad",
+          "phone": "8356549862",
+          "address_line_1": "nrt/12-98",
+          "address_line_2": "",
+          "city": "nrt",
+          "state": "Andhra Pradesh",
+          "pincode": "522601",
+          "landmark": "",
+          "is_default": true,
+          "created_at": "2026-10-08T13:18:12.701Z",
+          "updated_at": "2026-10-08T13:18:12.701Z"
+        },
+        "subtotal": 2396,
+        "delivery_charge": 0,
+        "total_amount": 2396,
+        "payment_method": "VIDYUT SPARES PhonePe / GPay Number",
+        "payment_status": "AWAITING_VERIFICATION",
+        "order_status": "PENDING",
+        "placed_at": "2026-10-08T13:18:52.323Z",
+        "confirmed_at": null,
+        "cancellation_status": "NOT_CANCELLED",
+        "created_at": "2026-10-08T13:18:52.323Z",
+        "updated_at": "2026-10-08T13:18:52.323Z",
+        "items": [
+          {
+            "id": "fa357d2e-5dbf-462c-bd66-ff195dcfda1e",
+            "product_id": "5ac864f7-9809-44b9-951e-16ad52cca96c",
+            "product_name_snapshot": "lbs spares",
+            "sku_snapshot": "VS-LBS-7220",
+            "price_snapshot": 799,
+            "quantity": 1,
+            "subtotal": 799,
+            "created_at": "2026-10-08T13:18:52.195Z",
+            "order_id": "7982d275-57dd-4163-8618-1d4e03a141e9"
+          },
+          {
+            "id": "af1b3787-dbfc-494e-a10a-a66e62fc2404",
+            "product_id": "7fc9da80-09f9-4c22-82ab-8a3234efb4bb",
+            "product_name_snapshot": "11k station",
+            "sku_snapshot": "VS-XXK-9102",
+            "price_snapshot": 998,
+            "quantity": 1,
+            "subtotal": 998,
+            "created_at": "2026-10-08T13:18:52.260Z",
+            "order_id": "7982d275-57dd-4163-8618-1d4e03a141e9"
+          },
+          {
+            "id": "b8a3990b-81c8-4014-97c0-f8fdb3bc99eb",
+            "product_id": "d856bf4b-b191-443d-a464-79c30ff15713",
+            "product_name_snapshot": "heater",
+            "sku_snapshot": "VS-HEA-3403",
+            "price_snapshot": 599,
+            "quantity": 1,
+            "subtotal": 599,
+            "created_at": "2026-10-08T13:18:52.323Z",
+            "order_id": "7982d275-57dd-4163-8618-1d4e03a141e9"
+          }
+        ]
+      }
+    },
     {
       "id": "4b181ff1-918d-4ddc-bc5d-56ebf8a8fbc7",
       "order_id": "979a6ab9-33f1-40f1-8f67-0c20734b1452",
@@ -1894,6 +2203,51 @@
     }
   ],
   "addresses": [
+    {
+      "id": "bd0e7b4f-1fff-41ac-88c3-925313ef41c5",
+      "user_id": "8ab49fd4-bada-4c65-a968-d6ca6a2da30e",
+      "full_name": "vivek",
+      "phone": "8484499665",
+      "address_line_1": "14-6-7",
+      "address_line_2": "",
+      "city": "Vijayawada",
+      "state": "Andhra Pradesh",
+      "pincode": "533308",
+      "landmark": "",
+      "is_default": true,
+      "created_at": "2026-10-08T15:42:42.966Z",
+      "updated_at": "2026-10-08T15:42:42.966Z"
+    },
+    {
+      "id": "38db8558-82e3-46dd-8049-1ff8202ac1ea",
+      "user_id": "25cb1109-b580-48e4-b341-ead4f982914b",
+      "full_name": "vishnu",
+      "phone": "9182850359",
+      "address_line_1": "kovvada/12-45",
+      "address_line_2": "",
+      "city": "bhimavaram",
+      "state": "Andhra Pradesh",
+      "pincode": "522021",
+      "landmark": "",
+      "is_default": true,
+      "created_at": "2026-10-08T13:33:10.382Z",
+      "updated_at": "2026-10-08T13:33:10.382Z"
+    },
+    {
+      "id": "9a9874f4-5d3e-4d74-966c-a2ae15ceb506",
+      "user_id": "b15e70c9-0bb5-4a46-8dde-e3e05b5c1934",
+      "full_name": "prasad",
+      "phone": "8356549862",
+      "address_line_1": "nrt/12-98",
+      "address_line_2": "",
+      "city": "nrt",
+      "state": "Andhra Pradesh",
+      "pincode": "522601",
+      "landmark": "",
+      "is_default": true,
+      "created_at": "2026-10-08T13:18:12.701Z",
+      "updated_at": "2026-10-08T13:18:12.701Z"
+    },
     {
       "id": "ac3eda03-b56e-4a63-82d0-44ee95e9e5b3",
       "user_id": "42d5fe84-2d9e-4aae-96b1-16f657018ac4",

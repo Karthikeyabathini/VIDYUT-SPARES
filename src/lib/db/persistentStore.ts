@@ -432,12 +432,15 @@ export const persistentStore = {
     if (userId) {
       return store.addresses.filter((a) => a.user_id === userId);
     }
-    return store.addresses;
+    return [];
   },
 
-  getAddressById(id: string): Address | null {
+  getAddressById(id: string, userId?: string): Address | null {
     const store = ensureDataFile();
-    return store.addresses.find((a) => a.id === id) || null;
+    const addr = store.addresses.find((a) => a.id === id);
+    if (!addr) return null;
+    if (userId && addr.user_id !== userId) return null;
+    return addr;
   },
 
   createAddress(address: Address): Address {

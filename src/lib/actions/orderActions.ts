@@ -10,6 +10,73 @@ import { z } from 'zod';
 import { getProductById, updateProductStock } from '@/lib/actions/productActions';
 import { persistentStore } from '@/lib/db/persistentStore';
 
+export async function ensureUserAndAddressInSupabase(user: any, address: Address) {
+  try {
+    const adminSupabase = createAdminClient();
+    const userId = user?.id || address?.user_id;
+
+    if (userId) {
+      const { data: existingUser } = await adminSupabase
+        .from('users')
+        .select('id')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (!existingUser) {
+        const userName = user?.name || address?.full_name || 'Valued Customer';
+        const userEmail = user?.email || `${userId}@vidyutspares.com`;
+        const userPhone = user?.phone || address?.phone || null;
+        const userRole = user?.role || 'CUSTOMER';
+
+        const { error: userErr } = await adminSupabase.from('users').upsert([
+          {
+            id: userId,
+            name: userName,
+            email: userEmail,
+            phone: userPhone,
+            role: userRole,
+            is_active: true,
+          },
+        ]);
+        if (userErr) {
+          console.error('ensureUserAndAddressInSupabase user error:', userErr);
+        }
+      }
+    }
+
+    if (address && address.id) {
+      const { data: existingAddr } = await adminSupabase
+        .from('addresses')
+        .select('id')
+        .eq('id', address.id)
+        .maybeSingle();
+
+      if (!existingAddr) {
+        const { error: addrErr } = await adminSupabase.from('addresses').upsert([
+          {
+            id: address.id,
+            user_id: userId || address.user_id,
+            full_name: address.full_name,
+            phone: address.phone,
+            address_line_1: address.address_line_1,
+            address_line_2: address.address_line_2 || null,
+            city: address.city || 'Vijayawada',
+            state: address.state || 'Andhra Pradesh',
+            pincode: address.pincode,
+            landmark: address.landmark || null,
+          },
+        ]);
+        if (addrErr) {
+          console.error('ensureUserAndAddressInSupabase address error:', addrErr);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('ensureUserAndAddressInSupabase exception:', err);
+  }
+}
+
+
 export async function getAddresses(): Promise<Address[]> {
   try {
     const user = await getActiveUser();
@@ -33,16 +100,18 @@ export async function getAddresses(): Promise<Address[]> {
 
     const localAddrs = persistentStore.getAddresses(user.id);
 
-    // Merge both sources by ID so no address is omitted
+    // Merge both sources by ID, ensuring STRICT filtering by user.id
     const addressMap = new Map<string, Address>();
-    localAddrs.forEach((a) => addressMap.set(a.id, a));
-    supabaseAddrs.forEach((a) => addressMap.set(a.id, a));
-
-    // If user has no specific addresses saved under user.id, check all local addresses
-    if (addressMap.size === 0) {
-      const allLocal = persistentStore.getAddresses();
-      allLocal.forEach((a) => addressMap.set(a.id, a));
-    }
+    localAddrs.forEach((a) => {
+      if (a.user_id === user.id) {
+        addressMap.set(a.id, a);
+      }
+    });
+    supabaseAddrs.forEach((a) => {
+      if (a.user_id === user.id) {
+        addressMap.set(a.id, a);
+      }
+    });
 
     return Array.from(addressMap.values());
   } catch (err) {
@@ -52,33 +121,33 @@ export async function getAddresses(): Promise<Address[]> {
 }
 
 export async function getAddressById(addressId?: string): Promise<Address | null> {
-  if (addressId) {
-    // 1. Direct local lookup in persistentStore
-    const local = persistentStore.getAddressById(addressId);
-    if (local) return local;
+  if (!addressId) return null;
+  const user = await getActiveUser();
+  if (!user) return null;
 
-    // 2. Direct Supabase query by addressId
-    try {
-      const adminSupabase = createAdminClient();
-      const { data, error } = await adminSupabase
-        .from('addresses')
-        .select('*')
-        .eq('id', addressId)
-        .maybeSingle();
+  // 1. Direct local lookup in persistentStore with user ownership verification
+  const local = persistentStore.getAddressById(addressId, user.id);
+  if (local && (local.user_id === user.id || user.role === 'ADMIN')) {
+    return local;
+  }
 
-      if (!error && data) return data as Address;
-    } catch {
-      // DB fallback
+  // 2. Direct Supabase query by addressId with user ownership verification
+  try {
+    const adminSupabase = createAdminClient();
+    let query = adminSupabase.from('addresses').select('*').eq('id', addressId);
+    if (user.role !== 'ADMIN') {
+      query = query.eq('user_id', user.id);
     }
+    const { data, error } = await query.maybeSingle();
+
+    if (!error && data && (data.user_id === user.id || user.role === 'ADMIN')) {
+      return data as Address;
+    }
+  } catch {
+    // DB fallback
   }
 
-  // 3. Fallback to all addresses for current user or default local addresses
-  const allAddrs = await getAddresses();
-  if (addressId) {
-    const matched = allAddrs.find((a) => a.id === addressId);
-    if (matched) return matched;
-  }
-  return allAddrs[0] || null;
+  return null;
 }
 
 export async function createAddress(formData: any): Promise<ActionResponse<Address>> {
@@ -126,7 +195,22 @@ export async function createAddress(formData: any): Promise<ActionResponse<Addre
 
     try {
       const adminSupabase = createAdminClient();
-      await adminSupabase.from('addresses').insert([newAddress]);
+      if (user) {
+        await adminSupabase.from('users').upsert([
+          {
+            id: userId,
+            name: user.name || validated.full_name,
+            email: user.email || `${userId}@vidyutspares.com`,
+            phone: user.phone || validated.phone,
+            role: user.role || 'CUSTOMER',
+            is_active: true,
+          },
+        ]);
+      }
+      const { error: addrErr } = await adminSupabase.from('addresses').insert([newAddress]);
+      if (addrErr) {
+        console.error('createAddress Supabase insert error:', addrErr);
+      }
     } catch (dbErr) {
       console.error('createAddress Supabase insert error:', dbErr);
     }
@@ -231,10 +315,13 @@ export async function placeCODOrder(params: {
       items: orderItemsWithId as any,
     };
 
-    // 1. Try Supabase insert first
+    // 1. Ensure user profile & delivery address exist in Supabase DB before inserting order
+    await ensureUserAndAddressInSupabase(user, address);
+
+    // 2. Insert into Supabase
     try {
       const adminSupabase = createAdminClient();
-      await adminSupabase.from('orders').insert([
+      const { error: orderErr } = await adminSupabase.from('orders').insert([
         {
           id: newOrderId,
           order_number,
@@ -254,7 +341,14 @@ export async function placeCODOrder(params: {
           updated_at: now,
         },
       ]);
-      await adminSupabase.from('order_items').insert(orderItemsWithId);
+      if (orderErr) {
+        console.error('placeCODOrder Supabase order insert error:', orderErr);
+      }
+
+      const { error: itemsErr } = await adminSupabase.from('order_items').insert(orderItemsWithId);
+      if (itemsErr) {
+        console.error('placeCODOrder Supabase order_items insert error:', itemsErr);
+      }
     } catch (dbErr) {
       console.error('placeCODOrder Supabase error:', dbErr);
     }
@@ -397,10 +491,13 @@ export async function submitOnlinePaymentAndCreateOrder(params: {
       items: orderItemsWithId as any,
     };
 
+    // Ensure user profile & delivery address exist in Supabase DB before inserting order
+    await ensureUserAndAddressInSupabase(user, address);
+
     // Create Order, Order Items, and Payment submission in Supabase
     try {
       const adminSupabase = createAdminClient();
-      await adminSupabase.from('orders').insert([
+      const { error: orderErr } = await adminSupabase.from('orders').insert([
         {
           id: newOrderId,
           order_number,
@@ -420,9 +517,16 @@ export async function submitOnlinePaymentAndCreateOrder(params: {
           updated_at: now,
         },
       ]);
-      await adminSupabase.from('order_items').insert(orderItemsWithId);
+      if (orderErr) {
+        console.error('submitOnlinePaymentAndCreateOrder Supabase order insert error:', orderErr);
+      }
 
-      await adminSupabase.from('payments').insert([
+      const { error: itemsErr } = await adminSupabase.from('order_items').insert(orderItemsWithId);
+      if (itemsErr) {
+        console.error('submitOnlinePaymentAndCreateOrder Supabase order_items insert error:', itemsErr);
+      }
+
+      const { error: payErr } = await adminSupabase.from('payments').insert([
         {
           id: newPaymentId,
           order_id: newOrderId,
@@ -440,6 +544,9 @@ export async function submitOnlinePaymentAndCreateOrder(params: {
           updated_at: now,
         },
       ]);
+      if (payErr) {
+        console.error('submitOnlinePaymentAndCreateOrder Supabase payments insert error:', payErr);
+      }
     } catch (dbErr) {
       console.error('submitOnlinePaymentAndCreateOrder Supabase error:', dbErr);
     }
@@ -750,12 +857,13 @@ export async function getAllAdminOrders(): Promise<Order[]> {
 }
 
 export async function getOrderByNumber(orderNumber: string): Promise<Order | null> {
+  if (!orderNumber) return null;
   try {
     const adminSupabase = createAdminClient();
     const { data, error } = await adminSupabase
       .from('orders')
       .select('*, items:order_items(*), payment:payments(*), invoice:invoices(*), user:users(*)')
-      .eq('order_number', orderNumber)
+      .or(`order_number.eq.${orderNumber},id.eq.${orderNumber}`)
       .maybeSingle();
 
     if (!error && data) return sanitizeSingleOrder(data as Order);
@@ -767,12 +875,13 @@ export async function getOrderByNumber(orderNumber: string): Promise<Order | nul
 }
 
 export async function getOrderById(orderId: string): Promise<Order | null> {
+  if (!orderId) return null;
   try {
     const adminSupabase = createAdminClient();
     const { data, error } = await adminSupabase
       .from('orders')
       .select('*, items:order_items(*), payment:payments(*), invoice:invoices(*), user:users(*)')
-      .eq('id', orderId)
+      .or(`id.eq.${orderId},order_number.eq.${orderId}`)
       .maybeSingle();
 
     if (!error && data) return sanitizeSingleOrder(data as Order);
