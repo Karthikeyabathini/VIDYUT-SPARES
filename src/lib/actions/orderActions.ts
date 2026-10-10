@@ -895,15 +895,26 @@ export async function getAllAdminOrders(): Promise<Order[]> {
 
 export async function getOrderByNumber(orderNumber: string): Promise<Order | null> {
   if (!orderNumber) return null;
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderNumber);
   try {
     const adminSupabase = createAdminClient();
-    const { data, error } = await adminSupabase
+    let query = adminSupabase
       .from('orders')
-      .select('*, items:order_items(*), payment:payments(*), invoice:invoices(*), user:users(*)')
-      .or(`order_number.eq.${orderNumber},id.eq.${orderNumber}`)
-      .maybeSingle();
+      .select('*, items:order_items(*), payment:payments(*), invoice:invoices(*), user:users(*)');
 
-    if (!error && data) return sanitizeSingleOrder(data as Order);
+    if (isUuid) {
+      query = query.or(`id.eq.${orderNumber},order_number.eq.${orderNumber}`);
+    } else {
+      query = query.eq('order_number', orderNumber);
+    }
+
+    const { data, error } = await query.maybeSingle();
+
+    if (!error && data) {
+      const order = sanitizeSingleOrder(data as Order);
+      if (order) persistentStore.createOrder(order);
+      return order;
+    }
   } catch {
     // Fallback
   }
@@ -913,15 +924,26 @@ export async function getOrderByNumber(orderNumber: string): Promise<Order | nul
 
 export async function getOrderById(orderId: string): Promise<Order | null> {
   if (!orderId) return null;
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderId);
   try {
     const adminSupabase = createAdminClient();
-    const { data, error } = await adminSupabase
+    let query = adminSupabase
       .from('orders')
-      .select('*, items:order_items(*), payment:payments(*), invoice:invoices(*), user:users(*)')
-      .or(`id.eq.${orderId},order_number.eq.${orderId}`)
-      .maybeSingle();
+      .select('*, items:order_items(*), payment:payments(*), invoice:invoices(*), user:users(*)');
 
-    if (!error && data) return sanitizeSingleOrder(data as Order);
+    if (isUuid) {
+      query = query.or(`id.eq.${orderId},order_number.eq.${orderId}`);
+    } else {
+      query = query.eq('order_number', orderId);
+    }
+
+    const { data, error } = await query.maybeSingle();
+
+    if (!error && data) {
+      const order = sanitizeSingleOrder(data as Order);
+      if (order) persistentStore.createOrder(order);
+      return order;
+    }
   } catch {
     // Fallback
   }
