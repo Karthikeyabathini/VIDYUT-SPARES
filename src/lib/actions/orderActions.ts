@@ -120,6 +120,29 @@ export async function getAddresses(): Promise<Address[]> {
   }
 }
 
+export async function validateAddressObject(address: any): Promise<{ valid: boolean; error?: string }> {
+  if (!address) {
+    return { valid: false, error: 'Delivery address not found. Please select or add a valid delivery address.' };
+  }
+  const fullName = (address.full_name || '').trim();
+  if (fullName.length < 2) {
+    return { valid: false, error: 'Selected address is invalid: Contact name is required.' };
+  }
+  const phoneDigits = (address.phone || '').replace(/[^0-9]/g, '');
+  if (phoneDigits.length < 10) {
+    return { valid: false, error: 'Selected address is invalid: Please enter a valid 10-digit mobile phone number.' };
+  }
+  const streetAddr = (address.address_line_1 || '').trim();
+  if (streetAddr.length < 3) {
+    return { valid: false, error: 'Selected address is invalid: Street address / House No. is required.' };
+  }
+  const pincodeDigits = (address.pincode || '').replace(/[^0-9]/g, '');
+  if (pincodeDigits.length !== 6) {
+    return { valid: false, error: 'Selected address is invalid: Pincode must be a 6-digit number.' };
+  }
+  return { valid: true };
+}
+
 export async function getAddressById(addressId?: string): Promise<Address | null> {
   if (!addressId) return null;
   const user = await getActiveUser();
@@ -128,6 +151,7 @@ export async function getAddressById(addressId?: string): Promise<Address | null
   // 1. Direct local lookup in persistentStore with user ownership verification
   const local = persistentStore.getAddressById(addressId, user.id);
   if (local && (local.user_id === user.id || user.role === 'ADMIN')) {
+    ensureUserAndAddressInSupabase(user, local).catch(() => {});
     return local;
   }
 
@@ -141,7 +165,9 @@ export async function getAddressById(addressId?: string): Promise<Address | null
     const { data, error } = await query.maybeSingle();
 
     if (!error && data && (data.user_id === user.id || user.role === 'ADMIN')) {
-      return data as Address;
+      const fetchedAddr = data as Address;
+      persistentStore.createAddress(fetchedAddr);
+      return fetchedAddr;
     }
   } catch {
     // DB fallback
@@ -164,19 +190,6 @@ export async function createAddress(formData: any): Promise<ActionResponse<Addre
     } catch (err: any) {
       if (err instanceof z.ZodError) {
         const issue = err.issues[0];
-        const fieldName = issue?.path?.[0];
-        if (fieldName === 'phone') {
-          return { success: false, error: 'Please enter a valid 10-digit Indian mobile phone number (e.g. 9876543210).' };
-        }
-        if (fieldName === 'pincode') {
-          return { success: false, error: 'Pincode must be exactly 6 digits (e.g. 520001).' };
-        }
-        if (fieldName === 'full_name') {
-          return { success: false, error: 'Full contact name is required.' };
-        }
-        if (fieldName === 'address_line_1') {
-          return { success: false, error: 'Street address / House No. is required.' };
-        }
         return { success: false, error: issue?.message || 'Invalid delivery address details.' };
       }
       return { success: false, error: 'Invalid delivery address details.' };
@@ -187,8 +200,30 @@ export async function createAddress(formData: any): Promise<ActionResponse<Addre
     const newAddress: Address = {
       id: newAddressId,
       user_id: userId,
-      ...validated,
+      full_name: validated.full_name,
+      phone: validated.phone,
+      address_line_1: validated.address_line_1,
+      address_line_2: validated.address_line_2 || null,
+      city: validated.city || 'Vijayawada',
+      state: validated.state || 'Andhra Pradesh',
+      pincode: validated.pincode,
+      landmark: validated.landmark || null,
       is_default: true,
+      created_at: now,
+      updated_at: now,
+    };
+
+    const dbAddressRecord = {
+      id: newAddressId,
+      user_id: userId,
+      full_name: validated.full_name,
+      phone: validated.phone,
+      address_line_1: validated.address_line_1,
+      address_line_2: validated.address_line_2 || null,
+      city: validated.city || 'Vijayawada',
+      state: validated.state || 'Andhra Pradesh',
+      pincode: validated.pincode,
+      landmark: validated.landmark || null,
       created_at: now,
       updated_at: now,
     };
@@ -207,7 +242,7 @@ export async function createAddress(formData: any): Promise<ActionResponse<Addre
           },
         ]);
       }
-      const { error: addrErr } = await adminSupabase.from('addresses').insert([newAddress]);
+      const { error: addrErr } = await adminSupabase.from('addresses').insert([dbAddressRecord]);
       if (addrErr) {
         console.error('createAddress Supabase insert error:', addrErr);
       }
@@ -239,8 +274,10 @@ export async function placeCODOrder(params: {
     const userId = user.id;
 
     const address = await getAddressById(params.address_id);
-
-    if (!address) return { success: false, error: 'Delivery address not found. Please add a valid address.' };
+    const addrVal = await validateAddressObject(address);
+    if (!addrVal.valid || !address) {
+      return { success: false, error: addrVal.error || 'Delivery address not found. Please add a valid address.' };
+    }
 
     const { items: cartItems } = await getCart();
 
@@ -411,9 +448,9 @@ export async function submitOnlinePaymentAndCreateOrder(params: {
     }
 
     const address = await getAddressById(params.address_id);
-
-    if (!address) {
-      return { success: false, error: 'Delivery address not found. Please select a valid address.' };
+    const addrVal = await validateAddressObject(address);
+    if (!addrVal.valid || !address) {
+      return { success: false, error: addrVal.error || 'Delivery address not found. Please select a valid address.' };
     }
 
     const { items: cartItems } = await getCart();

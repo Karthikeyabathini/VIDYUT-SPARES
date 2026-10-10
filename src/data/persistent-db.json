@@ -80,13 +80,13 @@
       "category_id": "c1111111-1111-1111-1111-111111111111",
       "brand": "spares",
       "price": 799,
-      "stock_quantity": 41,
+      "stock_quantity": 39,
       "low_stock_threshold": 5,
       "description": null,
       "image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790347798194_lbs_spares",
       "is_active": true,
       "created_at": "2026-09-25T14:49:59.349Z",
-      "updated_at": "2026-10-08T13:33:17.057Z"
+      "updated_at": "2026-10-10T06:07:48.924Z"
     },
     {
       "id": "7fc9da80-09f9-4c22-82ab-8a3234efb4bb",
@@ -96,13 +96,13 @@
       "category_id": "c1111111-1111-1111-1111-111111111111",
       "brand": "11k",
       "price": 998,
-      "stock_quantity": 39,
+      "stock_quantity": 38,
       "low_stock_threshold": 5,
       "description": null,
       "image_url": "https://lmxnazyelhzvvqpajuoz.supabase.co/storage/v1/object/public/product-images/products/1790347757268_11k_station",
       "is_active": true,
       "created_at": "2026-09-25T14:49:19.048Z",
-      "updated_at": "2026-10-08T15:44:14.610Z"
+      "updated_at": "2026-10-10T06:07:49.044Z"
     },
     {
       "id": "d856bf4b-b191-443d-a464-79c30ff15713",
@@ -154,6 +154,111 @@
     }
   ],
   "orders": [
+    {
+      "id": "cdadddcc-6631-4784-91f7-6121210bb03b",
+      "order_number": "VS-2026-788416",
+      "user_id": "174542ce-4ea0-47b4-9814-2a8c9b37c41b",
+      "address_id": "7da3f1e7-d678-4b29-a489-34535d0a1ed4",
+      "address_snapshot": {
+        "id": "7da3f1e7-d678-4b29-a489-34535d0a1ed4",
+        "user_id": "174542ce-4ea0-47b4-9814-2a8c9b37c41b",
+        "full_name": "kethan",
+        "phone": "9182850359",
+        "address_line_1": "madapet/12-98",
+        "address_line_2": null,
+        "city": "mandapet",
+        "state": "Andhra Pradesh",
+        "pincode": "534202",
+        "landmark": null,
+        "is_default": true,
+        "created_at": "2026-10-10T06:07:42.945Z",
+        "updated_at": "2026-10-10T06:07:42.945Z"
+      },
+      "subtotal": 1797,
+      "delivery_charge": 50,
+      "total_amount": 1847,
+      "payment_method": "COD",
+      "payment_status": "PAID",
+      "order_status": "DELIVERED",
+      "placed_at": "2026-10-10T06:07:48.311Z",
+      "confirmed_at": "2026-10-10T06:07:48.311Z",
+      "cancellation_status": "NOT_CANCELLED",
+      "created_at": "2026-10-10T06:07:48.311Z",
+      "updated_at": "2026-10-10T06:08:15.813Z",
+      "items": [
+        {
+          "id": "43b03d14-9f16-49bd-b242-6421a62ebf06",
+          "product_id": "5ac864f7-9809-44b9-951e-16ad52cca96c",
+          "product_name_snapshot": "lbs spares",
+          "sku_snapshot": "VS-LBS-7220",
+          "price_snapshot": 799,
+          "quantity": 1,
+          "subtotal": 799,
+          "created_at": "2026-10-10T06:07:48.229Z",
+          "order_id": "cdadddcc-6631-4784-91f7-6121210bb03b"
+        },
+        {
+          "id": "ba8c2bbd-bbc1-4db1-a0e4-ae7876f8e0a3",
+          "product_id": "7fc9da80-09f9-4c22-82ab-8a3234efb4bb",
+          "product_name_snapshot": "11k station",
+          "sku_snapshot": "VS-XXK-9102",
+          "price_snapshot": 998,
+          "quantity": 1,
+          "subtotal": 998,
+          "created_at": "2026-10-10T06:07:48.311Z",
+          "order_id": "cdadddcc-6631-4784-91f7-6121210bb03b"
+        }
+      ],
+      "delivered_at": "2026-10-10T06:08:15.744Z",
+      "completed_at": "2026-10-10T06:08:15.744Z"
+    },
+    {
+      "id": "39b2162a-c175-4780-a675-62e6636b3566",
+      "order_number": "VS-2026-929663",
+      "user_id": "8ab49fd4-bada-4c65-a968-d6ca6a2da30e",
+      "address_id": "bd0e7b4f-1fff-41ac-88c3-925313ef41c5",
+      "address_snapshot": {
+        "id": "bd0e7b4f-1fff-41ac-88c3-925313ef41c5",
+        "user_id": "8ab49fd4-bada-4c65-a968-d6ca6a2da30e",
+        "full_name": "vivek",
+        "phone": "8484499665",
+        "address_line_1": "14-6-7",
+        "address_line_2": "",
+        "city": "Vijayawada",
+        "state": "Andhra Pradesh",
+        "pincode": "533308",
+        "landmark": "",
+        "is_default": true,
+        "created_at": "2026-10-08T15:42:42.966Z",
+        "updated_at": "2026-10-08T15:42:42.966Z"
+      },
+      "subtotal": 799,
+      "delivery_charge": 50,
+      "total_amount": 849,
+      "payment_method": "COD",
+      "payment_status": "PAID",
+      "order_status": "DELIVERED",
+      "placed_at": "2026-10-10T05:39:37.970Z",
+      "confirmed_at": "2026-10-10T05:39:37.970Z",
+      "cancellation_status": "NOT_CANCELLED",
+      "created_at": "2026-10-10T05:39:37.970Z",
+      "updated_at": "2026-10-10T05:40:45.662Z",
+      "items": [
+        {
+          "id": "b97addfd-9597-43d9-9f31-44ff99e7b4f0",
+          "product_id": "5ac864f7-9809-44b9-951e-16ad52cca96c",
+          "product_name_snapshot": "lbs spares",
+          "sku_snapshot": "VS-LBS-7220",
+          "price_snapshot": 799,
+          "quantity": 1,
+          "subtotal": 799,
+          "created_at": "2026-10-10T05:39:37.970Z",
+          "order_id": "39b2162a-c175-4780-a675-62e6636b3566"
+        }
+      ],
+      "delivered_at": "2026-10-10T05:40:45.558Z",
+      "completed_at": "2026-10-10T05:40:45.558Z"
+    },
     {
       "id": "5ae28dde-0d37-49fa-9e6a-d33743f6119f",
       "order_number": "VS-2026-465592",
@@ -2203,6 +2308,21 @@
     }
   ],
   "addresses": [
+    {
+      "id": "7da3f1e7-d678-4b29-a489-34535d0a1ed4",
+      "user_id": "174542ce-4ea0-47b4-9814-2a8c9b37c41b",
+      "full_name": "kethan",
+      "phone": "9182850359",
+      "address_line_1": "madapet/12-98",
+      "address_line_2": null,
+      "city": "mandapet",
+      "state": "Andhra Pradesh",
+      "pincode": "534202",
+      "landmark": null,
+      "is_default": true,
+      "created_at": "2026-10-10T06:07:42.945Z",
+      "updated_at": "2026-10-10T06:07:42.945Z"
+    },
     {
       "id": "bd0e7b4f-1fff-41ac-88c3-925313ef41c5",
       "user_id": "8ab49fd4-bada-4c65-a968-d6ca6a2da30e",

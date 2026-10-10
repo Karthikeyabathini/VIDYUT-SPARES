@@ -139,6 +139,10 @@ export async function registerCustomer(formData: {
       maxAge: 60 * 60 * 24 * 30, // 30 days
       sameSite: 'lax',
     });
+    try {
+      cookieStore.set('vs_admin_session', '', { path: '/', maxAge: 0 });
+      cookieStore.delete('vs_admin_session');
+    } catch {}
 
     await mergeGuestCartToCustomer(userId);
     revalidatePath('/', 'layout');
@@ -223,6 +227,11 @@ export async function loginUser(formData: {
         maxAge: 60 * 60 * 24 * 30, // 30 days
         sameSite: 'lax',
       });
+      try {
+        cookieStore.set('vs_admin_session', '', { path: '/', maxAge: 0 });
+        cookieStore.delete('vs_admin_session');
+      } catch {}
+
       await mergeGuestCartToCustomer(authData.user.id);
       revalidatePath('/', 'layout');
       return { success: true, data: profile as UserProfile };
@@ -254,6 +263,10 @@ export async function loginUser(formData: {
         maxAge: 60 * 60 * 24 * 30, // 30 days
         sameSite: 'lax',
       });
+      try {
+        cookieStore.set('vs_admin_session', '', { path: '/', maxAge: 0 });
+        cookieStore.delete('vs_admin_session');
+      } catch {}
 
       await mergeGuestCartToCustomer(existingProfile.id);
       revalidatePath('/', 'layout');
@@ -274,6 +287,12 @@ export async function loginAdmin(formData: {
     const validated = loginSchema.parse(formData);
     const cookieStore = await cookies();
     const normalizedEmail = validated.email.toLowerCase().trim();
+
+    // Clear any customer session when logging in as admin
+    try {
+      cookieStore.set('vs_customer_session', '', { path: '/', maxAge: 0 });
+      cookieStore.delete('vs_customer_session');
+    } catch {}
 
     // 1. Try Supabase Authentication
     try {
@@ -353,8 +372,14 @@ export async function loginAdmin(formData: {
 export async function logoutUser(): Promise<ActionResponse> {
   try {
     const cookieStore = await cookies();
-    cookieStore.delete('vs_admin_session');
-    cookieStore.delete('vs_customer_session');
+    try {
+      cookieStore.set('vs_admin_session', '', { path: '/', maxAge: 0 });
+      cookieStore.delete('vs_admin_session');
+    } catch {}
+    try {
+      cookieStore.set('vs_customer_session', '', { path: '/', maxAge: 0 });
+      cookieStore.delete('vs_customer_session');
+    } catch {}
 
     const supabase = await createClient();
     await supabase.auth.signOut();
@@ -369,9 +394,22 @@ export async function logoutUser(): Promise<ActionResponse> {
 export async function getCurrentUserProfile(): Promise<UserProfile | null> {
   try {
     const cookieStore = await cookies();
+    const customerSessionId = cookieStore.get('vs_customer_session')?.value;
     const adminSessionId = cookieStore.get('vs_admin_session')?.value;
 
     const adminSupabase = createAdminClient();
+
+    if (customerSessionId) {
+      const { data: customerProfile } = await adminSupabase
+        .from('users')
+        .select('*')
+        .eq('id', customerSessionId)
+        .maybeSingle();
+
+      if (customerProfile && customerProfile.is_active) {
+        return customerProfile as UserProfile;
+      }
+    }
 
     if (adminSessionId) {
       try {
@@ -402,19 +440,6 @@ export async function getCurrentUserProfile(): Promise<UserProfile | null> {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-    }
-
-    const customerSessionId = cookieStore.get('vs_customer_session')?.value;
-    if (customerSessionId) {
-      const { data: customerProfile } = await adminSupabase
-        .from('users')
-        .select('*')
-        .eq('id', customerSessionId)
-        .maybeSingle();
-
-      if (customerProfile && customerProfile.is_active) {
-        return customerProfile as UserProfile;
-      }
     }
 
     const supabase = await createClient();
