@@ -13,14 +13,47 @@ export const registerSchema = z.object({
 });
 
 export const addressSchema = z.object({
-  full_name: z.string().min(2, 'Full name is required'),
-  phone: z.string().min(10, 'Valid contact number is required'),
-  address_line_1: z.string().min(5, 'Street address is required'),
-  address_line_2: z.string().optional(),
-  city: z.string().min(2, 'City name is required').default('Vijayawada'),
-  state: z.string().min(2, 'State name is required').default('Andhra Pradesh'),
-  pincode: z.string().min(6, 'Pincode must be 6 digits').max(6),
-  landmark: z.string().optional(),
+  full_name: z
+    .string()
+    .transform((val) => (val || '').trim())
+    .pipe(z.string().min(2, 'Full contact name is required (at least 2 characters)')),
+  phone: z
+    .string()
+    .transform((val) => {
+      let digits = (val || '').replace(/[^0-9]/g, '');
+      if (digits.length === 12 && digits.startsWith('91')) digits = digits.slice(2);
+      if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+      return digits;
+    })
+    .pipe(z.string().regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian mobile number (e.g. 9876543210)')),
+  address_line_1: z
+    .string()
+    .transform((val) => (val || '').trim())
+    .pipe(z.string().min(3, 'Street address / House No. is required (at least 3 characters)')),
+  address_line_2: z
+    .string()
+    .transform((val) => (val ? val.trim() : ''))
+    .optional()
+    .nullable(),
+  city: z
+    .string()
+    .transform((val) => (val && val.trim() ? val.trim() : 'Vijayawada'))
+    .pipe(z.string().min(2, 'City name is required'))
+    .default('Vijayawada'),
+  state: z
+    .string()
+    .transform((val) => (val && val.trim() ? val.trim() : 'Andhra Pradesh'))
+    .pipe(z.string().min(2, 'State name is required'))
+    .default('Andhra Pradesh'),
+  pincode: z
+    .string()
+    .transform((val) => (val || '').replace(/[^0-9]/g, ''))
+    .pipe(z.string().regex(/^[1-9]\d{5}$/, 'Pincode must be a valid 6-digit Indian PIN code (e.g. 520001)')),
+  landmark: z
+    .string()
+    .transform((val) => (val ? val.trim() : ''))
+    .optional()
+    .nullable(),
 });
 
 export const paymentProofSchema = z.object({

@@ -53,28 +53,12 @@ export default function CheckoutForm({
     e.preventDefault();
     setAddressError(null);
 
-    const cleanPhone = newAddress.phone.replace(/[^0-9]/g, '');
-    if (cleanPhone.length !== 10) {
-      setAddressError('Please enter a valid 10-digit Indian mobile number (e.g. 9876543210).');
-      return;
-    }
-
-    const cleanPincode = newAddress.pincode.replace(/[^0-9]/g, '');
-    if (cleanPincode.length !== 6) {
-      setAddressError('Pincode must be exactly 6 digits.');
-      return;
-    }
-
     setLoading(true);
-    const res = await createAddress({
-      ...newAddress,
-      phone: cleanPhone,
-      pincode: cleanPincode,
-    });
+    const res = await createAddress(newAddress);
     setLoading(false);
 
     if (res.success && res.data) {
-      setAddresses([res.data, ...addresses]);
+      setAddresses((prev) => [res.data!, ...prev.filter((a) => a.id !== res.data!.id)]);
       setSelectedAddressId(res.data.id);
       setShowAddressForm(false);
       setAddressError(null);
